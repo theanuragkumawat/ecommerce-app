@@ -1,0 +1,134 @@
+import React, { useEffect, useState } from "react";
+import { Routes, Route,useLocation, useNavigate } from "react-router";
+import { Layout } from "./components";
+import { AdminDashboard, AdminFeatures, AdminOrders, AdminProducts, Login, Register, ShoppingAccount, ShoppingCart, ShoppingCheckout, ShoppingHome, ShoppingListing, ShoppingProductOverview, ShoppingWishlist, UnauthPage } from "./pages";
+import AdminLayout from "./components/admin-view/AdminLayout";
+import ShopingLayout from "./components/shopping-view/ShopingLayout";
+import NotFound from "./pages/NotFound";
+import { useSelector, useDispatch } from "react-redux";
+import authService from "./appwrite/auth";
+import { login as storeLogin, logout as storeLogout } from "./store/auth-slice"
+import databaseService from "./appwrite/config";
+import { addProductsToCart } from "./store/shop/cart-slice";
+import { addProductsToWishlist } from "./store/shop/wishlist-slice";
+
+function App() {
+
+  const dispatch = useDispatch()
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+  const userInfo = useSelector(state => state.auth.userData)
+const cartItems = useSelector(state => state.cart.cartItems)
+
+  const [isLoading, setIsLoading] = useState(true)
+  const location = useLocation()
+  const navigate = useNavigate()
+
+
+  async function getCart() {
+    if (userInfo) {
+      try {
+        const cart = await databaseService.getCart(userInfo.$id);
+        dispatch(addProductsToCart(JSON.parse(cart.products)))
+        const wishlist = await databaseService.getWishlist(userInfo.$id)
+        dispatch(addProductsToWishlist(JSON.parse(wishlist.products)))
+      } catch (error) {
+        // console.log("App.jsx getCart error " + error);
+      }
+    }
+  }
+  
+
+  useEffect(() => {
+    getCart();
+  }, [userInfo])
+  
+  // console.log(cartItems);
+  
+
+  useEffect(() => {
+
+    // if (!isAuthenticated && (location.pathname.includes('/admin') || location.pathname.includes('/register'))) {
+    //   navigate('/login')
+    // }
+    if (isAuthenticated && location.pathname === '/') {
+      navigate('shop/home')
+    }
+    // if(isAuthenticated && location.pathname.includes('/login') || location.pathname.includes('/register')){
+    //       navigate('/shop/home')
+    // }
+
+    // if (isAuthenticated || (isAuthenticated && (location.pathname.includes('/login') || location.pathname.includes('/register')))) {
+    //   if (user?.role == 'admin') {
+    //     navigate('/admin/dashboard')
+    //   }
+    //   else {
+    //   }
+    // }
+
+    // if (isAuthenticated && user?.role != 'admin' && location.pathname.includes('admin')) {
+    //   navigate('unauth-page')
+    // }
+    // if(isAuthenticated){
+    //   navigate('shop/home')
+    // }else if(!isAuthenticated) {
+    //   navigate('login')
+
+    // }
+
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    authService.getCurrentUser()
+      .then((userData) => {
+        if (userData) {
+          dispatch(storeLogin(userData ))
+          console.log(userData);
+          setIsLoading(false)
+
+        } else {
+          dispatch(storeLogout())
+          setIsLoading(false)
+        }
+      })
+
+  }, [])
+
+
+  return (
+    !isLoading ?
+      (<>
+        <div className="flex flex-col overflow-hidden bg-white">
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Route>
+
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="features" element={<AdminFeatures />} />
+            </Route>
+
+            <Route path="/shop" element={<ShopingLayout />}>
+              <Route path="home" element={<ShoppingHome />} />
+              <Route path="cart" element={<ShoppingCart />} />
+              <Route path="wishlist" element={<ShoppingWishlist />} />
+              <Route path="account" element={<ShoppingAccount />} />
+              <Route path="listing" element={<ShoppingListing />} />
+              <Route path="checkout" element={<ShoppingCheckout />} />
+              <Route path="product/:productId" element={<ShoppingProductOverview />} />
+            </Route>
+
+            <Route path="*" element={<NotFound />} />
+            <Route path="unauth-page" element={<UnauthPage />} />
+          </Routes>
+        </div>
+      </>) : (
+        <h1 className="text-center mt-96 text-2xl">Loading...</h1>
+      )
+  );
+}
+
+export default App;
