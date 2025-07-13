@@ -7,7 +7,7 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner"
 
 
-function Register() {
+function Register({setEmail,setVerifying}) {
 
     const navigate = useNavigate()
 
@@ -17,7 +17,6 @@ function Register() {
         email: "",
         password: "",
     });
-    console.log(userDetails);
 
     const create = async (e) => {
         e.preventDefault()
@@ -26,16 +25,24 @@ function Register() {
             const userData = await authService.createAccount(userDetails)
             if (userData) {
                 toast('Registration successful')
-                console.log(userData);
-                navigate('/login')
+                setEmail(userDetails.email)
+                setVerifying(true)
+                const session = await authService.login(userDetails)
+                if(session){
+                    const verifyData = await authService.getVerification()
+                    if(verifyData){
+                        console.log(verifyData);
+                    }
+                }
             }
         } catch (error) {
             setError(error.message)
             console.log("Signup error  " + error);
-
         }
-
     }
+
+    console.log(userDetails);
+    
 
     return (
         <form onSubmit={create}>

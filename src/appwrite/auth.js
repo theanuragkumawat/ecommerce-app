@@ -10,13 +10,13 @@ class AuthService {
         this.account = new Account(this.client);
     }
 
-    async createAccount({ email, password, username, role = 'user' }) {
+    async createAccount({ email, password, name, role = 'user' }) {
         try {
             const userAccount = await this.account.create(
                 ID.unique(),
                 email,
                 password,
-                username,
+                name,
                 role
             );
             if (userAccount) {
@@ -54,9 +54,29 @@ class AuthService {
             
         }
     }
+
+    // _____________VERIFY____________
+    async getVerification(){
+        try {
+            return await this.account.createVerification('http://localhost:5173/verify')
+        } catch (error) {   
+            console.log("Verify error" + error);
+        }
+    }
+
+    async updateVerification(userId,secret){
+        try {
+            return await this.account.updateVerification(userId,secret);
+        } catch (error) {   
+            console.log("update Verify error" + error);
+        }
+    }
+
 }
 
 
 const authService = new AuthService();
 
 export default authService;
+
+

@@ -11,9 +11,9 @@ import { login as storeLogin, logout as storeLogout } from "./store/auth-slice"
 import databaseService from "./appwrite/config";
 import { addProductsToCart } from "./store/shop/cart-slice";
 import { addProductsToWishlist } from "./store/shop/wishlist-slice";
+import Verify from "./pages/verify/Verify";
 
 function App() {
-
   const dispatch = useDispatch()
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
   const userInfo = useSelector(state => state.auth.userData)
@@ -42,39 +42,12 @@ const cartItems = useSelector(state => state.cart.cartItems)
     getCart();
   }, [userInfo])
   
-  // console.log(cartItems);
-  
+
 
   useEffect(() => {
-
-    // if (!isAuthenticated && (location.pathname.includes('/admin') || location.pathname.includes('/register'))) {
-    //   navigate('/login')
-    // }
-    if (isAuthenticated && location.pathname === '/') {
+    if (location.pathname === '/') {
       navigate('shop/home')
-    }
-    // if(isAuthenticated && location.pathname.includes('/login') || location.pathname.includes('/register')){
-    //       navigate('/shop/home')
-    // }
-
-    // if (isAuthenticated || (isAuthenticated && (location.pathname.includes('/login') || location.pathname.includes('/register')))) {
-    //   if (user?.role == 'admin') {
-    //     navigate('/admin/dashboard')
-    //   }
-    //   else {
-    //   }
-    // }
-
-    // if (isAuthenticated && user?.role != 'admin' && location.pathname.includes('admin')) {
-    //   navigate('unauth-page')
-    // }
-    // if(isAuthenticated){
-    //   navigate('shop/home')
-    // }else if(!isAuthenticated) {
-    //   navigate('login')
-
-    // }
-
+    }  
   }, [isAuthenticated])
 
   useEffect(() => {
@@ -102,6 +75,8 @@ const cartItems = useSelector(state => state.cart.cartItems)
             <Route element={<Layout />}>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/verify" element={<Verify />} />
+
             </Route>
 
             <Route path="/admin" element={<AdminLayout />}>

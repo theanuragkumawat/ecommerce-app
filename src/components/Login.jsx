@@ -28,12 +28,8 @@ function Login() {
         try {
             const session = await authService.login(userDetails)
             if (session) {
-                // console.log("Login details");
-                // console.log(session);
                 const userData = await authService.getCurrentUser();
                 if (userData) {
-                    // console.log("get account details");
-                    // console.log(userData)
                     dispatch(storeLogin({userData}))
                     toast('Login successfull')
                     navigate('/shop/home')
