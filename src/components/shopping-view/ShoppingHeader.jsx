@@ -10,11 +10,12 @@ import { toast } from 'sonner'
 import { logout as storeLogout } from "../../store/auth-slice"
 import { Badge } from '../ui/badge'
 import { getCartCount } from '@/store/shop/cart-slice'
+import { Button } from '../ui/button'
 
 function ShoppingHeader() {
 
   const navigate = useNavigate()
-  const {userData,isAuthenticated} = useSelector(state => state.auth)
+  const { userData, isAuthenticated } = useSelector(state => state.auth)
   const { cartCount, cartItems } = useSelector(state => state.cart)
   const dispatch = useDispatch()
 
@@ -62,7 +63,6 @@ function ShoppingHeader() {
   const handleLogout = async function () {
     const data = await authService.logout()
     if (data) {
-      console.log(data);
       dispatch(storeLogout())
       toast('Logout successfully')
       navigate('/login')
@@ -107,7 +107,7 @@ function ShoppingHeader() {
           </ul>
 
           <div className="flex items-center lg:space-x-2 relative">
-            
+
             <Link
               to="cart"
               id="myCartDropdownButton1"
@@ -163,9 +163,12 @@ function ShoppingHeader() {
                 isAuthenticated ?
                   (<Avatar className="mr-1">
                     <AvatarFallback className="flex items-center justify-center w-7 h-7 rounded-full bg-black text-white font-extrabold">
-                     
-                        {userData?.name?.[0]?.toUpperCase() || "U"}
-                
+
+                      {/* {userData?.name?.[0]?.toUpperCase() || "U"} */}
+                      {
+                        userData.name[0] || '!'
+                      }
+
                     </AvatarFallback>
                   </Avatar>) : (<User />)
               }
@@ -248,6 +251,12 @@ function ShoppingHeader() {
                 </div>
               </div>
             </button>
+            {
+              !isAuthenticated &&
+              <Link to="/login">
+                <Button>Login</Button>
+              </Link>
+            }
 
             <button
               onClick={() => showSmallScreenMenu ? setShowSmallScreenMenu(false) : setShowSmallScreenMenu(true)}

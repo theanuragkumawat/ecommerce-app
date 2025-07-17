@@ -30,7 +30,7 @@ function Login() {
             if (session) {
                 const userData = await authService.getCurrentUser();
                 if (userData) {
-                    dispatch(storeLogin({userData}))
+                    dispatch(storeLogin(userData))
                     toast('Login successfull')
                     navigate('/shop/home')
                 }

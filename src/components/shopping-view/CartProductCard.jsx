@@ -6,9 +6,9 @@ import { addProductsToCart } from '@/store/shop/cart-slice';
 import { addProductsToWishlist } from '@/store/shop/wishlist-slice';
 
 function CartProductCard({ productId, quantity }) {
-  const [image,setImage] = useState(null)
+  const [image, setImage] = useState(null)
   const cartItems = useSelector(state => state.cart.cartItems)
-  const {wishlistItems} = useSelector(state => state.wishlist)
+  const { wishlistItems } = useSelector(state => state.wishlist)
   const userData = useSelector(state => state.auth.userData)
   const dispatch = useDispatch()
   const [productDetails, setProductDetails] = useState(false)
@@ -18,8 +18,8 @@ function CartProductCard({ productId, quantity }) {
       const data = await databaseService.getProduct(productId);
       if (data) {
         setProductDetails(data)
-         const url = await databaseService.getFilePreview(data.image)
-         setImage(url.href)
+        const url = await databaseService.getFilePreview(data.image)
+        setImage(url.href)
       }
     } catch (error) {
       console.log("CartProductCard error :: " + error);
@@ -39,7 +39,7 @@ function CartProductCard({ productId, quantity }) {
       console.log("Error while increment quantity" + error);
     }
   }
-  
+
   async function decrementHandler() {
     let temp = cartItems.slice();
     if (quantity > 1) {
@@ -54,7 +54,7 @@ function CartProductCard({ productId, quantity }) {
       }
     } else {
       try {
-        temp = temp.filter(item => item.productId != productId );
+        temp = temp.filter(item => item.productId != productId);
         const data = await databaseService.updateCart(userData.$id, temp);
         if (data) {
           dispatch(addProductsToCart(JSON.parse(data.products)))
@@ -64,41 +64,56 @@ function CartProductCard({ productId, quantity }) {
       }
     }
   }
-  
+
   async function deleteHandler() {
     try {
       let temp = cartItems.slice();
-      temp = temp.filter(item => item.productId != productId );
+      temp = temp.filter(item => item.productId != productId);
+      if (temp.length == 0) {
+        const data = await databaseService.deleteCart(userData.$id);
+        dispatch(addProductsToCart([]));
+      } else {
         const data = await databaseService.updateCart(userData.$id, temp);
         if (data) {
           dispatch(addProductsToCart(JSON.parse(data.products)))
         }
+      }
     } catch (error) {
       console.log("Error while delete quantity" + error)
     }
   }
 
   async function moveToWishlist() {
-        try {
-            let temp = cartItems.slice()
-            temp = temp.filter(item => item.productId != productId)
-            const data = await databaseService.updateCart(userData.$id, temp);
-            dispatch(addProductsToCart(JSON.parse(data.products)))
+    try {
+      let temp = cartItems.slice()
+      temp = temp.filter(item => item.productId != productId)
+      if (temp.length == 0) {
+        const response = await databaseService.deleteCart(userData.$id);
+        dispatch(addProductsToCart([]));
+      } else {
+        const data = await databaseService.updateCart(userData.$id, temp);
+        dispatch(addProductsToCart(JSON.parse(data.products)));
+      }
 
-            let tmp = wishlistItems.slice()
-            const existing = tmp.find(item => item == productId)
-            if(existing){
-                return;
-            } else{
-                tmp.push(productId)
-                const response = await databaseService.updateWishlist(userData.$id,tmp);
-                dispatch(addProductsToWishlist(JSON.parse(response.products)))
-            }
-
-        } catch (error) {
-            console.log(error);
+      let tmp = wishlistItems.slice()
+      const existing = tmp.find(item => item == productId)
+      if (existing) {
+        return;
+      } else {
+        tmp.push(productId);
+        if (wishlistItems.length > 0) {
+          const response = await databaseService.updateWishlist(userData.$id, tmp);
+          dispatch(addProductsToWishlist(JSON.parse(response.products)));
+        } else {
+          const response = await databaseService.createWishlist(userData.$id, tmp);
+          dispatch(addProductsToWishlist(JSON.parse(response.products)));
         }
+      }
+
+    } catch (error) {
+      console.log(error);
     }
+  }
 
   useEffect(() => {
     getProductDetails();
@@ -191,7 +206,7 @@ function CartProductCard({ productId, quantity }) {
           </Link>
           <div className="flex items-center gap-4 mt-1.5">
             <button
-            onClick={moveToWishlist}
+              onClick={moveToWishlist}
               type="button"
               className=" cursor-pointer inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 hover:underline dark:text-gray-400 dark:hover:text-white"
             >
@@ -215,12 +230,12 @@ function CartProductCard({ productId, quantity }) {
               Move to Favorites
             </button>
             <button
-            onClick={deleteHandler}
+              onClick={deleteHandler}
               type="button"
               className="cursor-pointer inline-flex items-center text-sm font-medium text-red-600 hover:text-red-700 hover:underline dark:text-red-500"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="me-1.5 h-5 w-5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>
-                  </svg>
+              </svg>
               Remove
             </button>
           </div>

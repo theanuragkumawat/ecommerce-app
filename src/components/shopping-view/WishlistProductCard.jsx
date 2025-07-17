@@ -11,7 +11,7 @@ function WishlistProductCard({ productId }) {
     const [productDetails, setProductDetails] = useState(false);
     const [image, setimage] = useState(null)
     const wishlistItems = useSelector(state => state.wishlist.wishlistItems)
-    const {cartItems} = useSelector(state => state.cart)
+    const { cartItems } = useSelector(state => state.cart)
     const userData = useSelector(state => state.auth.userData)
     async function getProductDetails() {
         try {
@@ -30,10 +30,15 @@ function WishlistProductCard({ productId }) {
         try {
             let temp = wishlistItems.slice()
             temp = temp.filter(item => item != productId)
-            const data = await databaseService.updateWishlist(userData.$id, temp);
-            dispatch(addProductsToWishlist(JSON.parse(data.products)))
-
-            toast("deleted")
+            if (temp.length == 0) {
+                const response = await databaseService.deleteWishlist(userData.$id);
+                dispatch(addProductsToWishlist([]))
+                toast("deleted")
+            } else{
+                const data = await databaseService.updateWishlist(userData.$id, temp);
+                dispatch(addProductsToWishlist(JSON.parse(data.products)))
+                toast("deleted")
+            }
         } catch (error) {
             console.log(error);
         }
@@ -43,16 +48,24 @@ function WishlistProductCard({ productId }) {
         try {
             let temp = wishlistItems.slice()
             temp = temp.filter(item => item != productId)
-            const data = await databaseService.updateWishlist(userData.$id, temp);
-            dispatch(addProductsToWishlist(JSON.parse(data.products)))
+
+            if (temp.length == 0) {
+                const response = await databaseService.deleteWishlist(userData.$id);
+                dispatch(addProductsToWishlist([]))
+
+            } else{
+                const data = await databaseService.updateWishlist(userData.$id, temp);
+                dispatch(addProductsToWishlist(JSON.parse(data.products)));
+            }
+
 
             let tmp = cartItems.slice()
             const existing = tmp.find(item => item.productId == productId)
-            if(existing){
+            if (existing) {
                 return;
-            } else{
-                tmp.push({productId: productId,quantity:1})
-                const response = await databaseService.updateCart(userData.$id,tmp);
+            } else {
+                tmp.push({ productId: productId, quantity: 1 })
+                const response = await databaseService.updateCart(userData.$id, tmp);
                 dispatch(addProductsToCart(JSON.parse(response.products)))
             }
         } catch (error) {
