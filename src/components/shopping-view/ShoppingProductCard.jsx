@@ -1,14 +1,16 @@
 import databaseService from '@/appwrite/config';
 import { Heart, Import } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router'
+import { Link,useNavigate } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux';
 import { addProductsToCart } from '@/store/shop/cart-slice';
 import { toast } from 'sonner';
 import { addProductsToWishlist } from '@/store/shop/wishlist-slice';
 
-function ShoppingProductCard({ product, handleGetProductDetails }) {
+
+function ShoppingProductCard({ product }) {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const userData = useSelector(state => state.auth.userData)
     const cartItems = useSelector(state => state.cart.cartItems)
     const wishlistItems = useSelector(state => state.wishlist.wishlistItems)
@@ -24,6 +26,12 @@ function ShoppingProductCard({ product, handleGetProductDetails }) {
         getImage()
     }, [])
 
+    async function handleGetProductDetails($id){
+            // console.log(id);
+           
+            navigate(`/shop/product/${$id}`)
+            
+      }
 
     async function addToCartHandler(e) {
         e.stopPropagation();
@@ -46,6 +54,7 @@ function ShoppingProductCard({ product, handleGetProductDetails }) {
                         const data = await databaseService.updateCart(userData.$id, temp);
                         if (data) {
                             dispatch(addProductsToCart(JSON.parse(data.products)))
+                            toast("Product added to cart")
                         }
                     }
                 } else {
@@ -66,7 +75,7 @@ function ShoppingProductCard({ product, handleGetProductDetails }) {
             }
         } catch (error) {
             console.log(error);
-        }
+        } 
     }
 
     async function addToWishlistHandler(e) {

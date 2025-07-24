@@ -22,7 +22,10 @@ const cartSlice = createSlice({
                     count += item.quantity
                 }
                 state.cartCount = count;
-            } 
+            } else {
+                state.cartCount = 0;
+
+            }
         }
     }
 })

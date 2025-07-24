@@ -7,7 +7,7 @@ import { addProductsToWishlist } from '@/store/shop/wishlist-slice';
 
 function CartProductCard({ productId, quantity }) {
   const [image, setImage] = useState(null)
-  const cartItems = useSelector(state => state.cart.cartItems)
+  const {cartItems} = useSelector(state => state.cart)
   const { wishlistItems } = useSelector(state => state.wishlist)
   const userData = useSelector(state => state.auth.userData)
   const dispatch = useDispatch()
@@ -65,16 +65,22 @@ function CartProductCard({ productId, quantity }) {
     }
   }
 
+
+  
   async function deleteHandler() {
     try {
       let temp = cartItems.slice();
       temp = temp.filter(item => item.productId != productId);
       if (temp.length == 0) {
         const data = await databaseService.deleteCart(userData.$id);
+
         dispatch(addProductsToCart([]));
+
+
       } else {
         const data = await databaseService.updateCart(userData.$id, temp);
         if (data) {
+
           dispatch(addProductsToCart(JSON.parse(data.products)))
         }
       }

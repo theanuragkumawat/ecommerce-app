@@ -95,7 +95,7 @@ function ShoppingHeader() {
                       //   `py-2 relative font-medium text-sm dark:text-white after:content-[''] after:absolute after:left-0 after:bottom-0.5 after:h-[2px] after:bg-black    dark:after:bg-white after:transition-all after:duration-300  ${isActive ? 'after:w-full text-black' : 'after:w-0 text-gray-700'}`
                       // }
                       className={
-                        `hover:text-gray-950 py-2 relative font-medium text-sm dark:text-white after:content-[''] after:absolute after:left-0 after:bottom-0.5 after:h-[2px] after:bg-black    dark:after:bg-white after:transition-all after:duration-300 after:w-0 text-gray-700`
+                        `hover:text-gray-950 hover:after:w-full py-2 relative font-medium text-sm dark:text-white after:content-[''] after:absolute after:left-0 after:bottom-0.5 after:h-[2px] after:bg-black    dark:after:bg-white after:transition-all after:duration-300 after:w-0 text-gray-700`
                       }
                     >
                       {item.name}
@@ -133,7 +133,7 @@ function ShoppingHeader() {
                   d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"
                 />
               </svg>
-              <Badge variant="default | outline | secondary | destructive" className="absolute w-5 h-5 top-0.5 left-6">{cartCount > 0 ? cartCount : "0"}</Badge>
+              <Badge variant="" className="absolute w-4 h-4 top-0.5 left-6">{cartCount > 0 ? cartCount : "0"}</Badge>
 
             </Link>
 
@@ -172,8 +172,6 @@ function ShoppingHeader() {
                     </AvatarFallback>
                   </Avatar>) : (<User />)
               }
-
-
               <div
                 id="userDropdown1"
                 className={` ${showAccountMenu ? "opacity-100 scale-100" : "opacity-0 scale-95 h-0"} absolute transition-all duration-300 ease-in-out transform  top-10 z-10 w-56 divide-y divide-gray-100 overflow-hidden overflow-y-auto rounded-lg bg-white antialiased shadow dark:divide-gray-600 dark:bg-gray-700`}

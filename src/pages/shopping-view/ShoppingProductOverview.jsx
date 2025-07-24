@@ -16,7 +16,6 @@ function ShoppingProductOverview() {
     const {userData} = useSelector(state => state.auth)
     const {cartItems} = useSelector(state => state.cart)
     const {wishlistItems} = useSelector(state => state.wishlist)
-    console.log("HJer",wishlistItems);
     
     async function getProductDetails() {
         const data = await databaseService.getProduct(productId)

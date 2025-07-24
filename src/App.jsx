@@ -22,7 +22,7 @@ const cartItems = useSelector(state => state.cart.cartItems)
   const [isLoading, setIsLoading] = useState(true)
   const location = useLocation()
   const navigate = useNavigate()
-
+  // console.log(cartItems);
 
   async function getCart() {
     if (userInfo) {
@@ -55,7 +55,7 @@ const cartItems = useSelector(state => state.cart.cartItems)
       .then((userData) => {
         if (userData) {
           dispatch(storeLogin(userData ))
-          console.log(userData);
+          console.log("User logged in, details:",userData);
           setIsLoading(false)
 
         } else {

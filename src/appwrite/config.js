@@ -124,14 +124,17 @@ export class DatabaseService {
     }
   }
 
-  async getFilterProducts(category, brand) {
+  async getFilterProducts({category, brand, limit=0}) {
     const queries = [];
 
-    if (category.length > 0) {
+    if (category?.length > 0) {
       queries.push(Query.equal("category", category));
     }
-    if (brand.length > 0) {
+    if (brand?.length > 0) {
       queries.push(Query.equal("brand", brand));
+    }
+    if(limit){
+      queries.push(Query.limit(8))
     }
     try {
       const data = await this.databases.listDocuments(

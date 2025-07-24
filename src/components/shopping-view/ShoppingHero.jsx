@@ -1,45 +1,150 @@
-import { ArrowRight } from 'lucide-react'
-import React from 'react'
+import { Airplay, ArrowRight, BabyIcon, ChevronLeft, ChevronRight, CloudLightning, Footprints, Heater, Images, Shirt, ShirtIcon, ShoppingBasket, UmbrellaIcon, WashingMachine, WatchIcon } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router'
+import bannerOne from "../../assets/banner-1.webp"
+import bannerTwo from "../../assets/banner-2.webp"
+import bannerThree from "../../assets/banner-3.webp"
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel"
+
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from '../ui/button'
+import databaseService from '@/appwrite/config'
+import { ShoppingProductCard } from '..'
+
 
 function ShoppingHero() {
+    const slides = [bannerOne, bannerTwo, bannerThree];
+    const [currentSlide,setCurrentSlide] = useState(0);
+
+    useEffect(() => {
+        const slideTimer = setInterval(() => {
+            setCurrentSlide(prev => (prev +1) % slides.length)
+        },4000)
+        return () => clearInterval(slideTimer)
+    },[])
+
+    const categoriesWithIcon = [
+        { id: "men", label: "Men", icon: ShirtIcon },
+        { id: "women", label: "Women", icon: CloudLightning },
+        { id: "kids", label: "Kids", icon: BabyIcon },
+        { id: "accessories", label: "Accessories", icon: WatchIcon },
+        { id: "footwear", label: "Footwear", icon: Footprints },
+    ];
+
+    const brandsWithIcon = [
+        { id: "nike", label: "Nike", icon: Shirt },
+        { id: "adidas", label: "Adidas", icon: WashingMachine },
+        { id: "puma", label: "Puma", icon: ShoppingBasket },
+        { id: "levi", label: "Levi's", icon: Airplay },
+        { id: "zara", label: "Zara", icon: Images },
+        { id: "h&m", label: "H&M", icon: Heater },
+    ];
+
+    const [featureProducts, setFeatureProducts] = useState([])
+    const getFeatureProducts = async () => {
+        try {
+            let limit = 8
+            const data = await databaseService.getFilterProducts({limit})
+            if(data){
+                setFeatureProducts(data.documents)
+                
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        getFeatureProducts()
+    },[])
     return (
         <section>
-
-            <div
-                style={
+            <div className="flex flex-col min-h-screen">
+                <div className="relative w-full md:h-[600px] 2xl:h-[800px]">
                     {
-                        backgroundImage: `url("https://img.freepik.com/free-photo/travel-concept-close-up-portrait-young-beautiful-attractive-ginger-red-hair-girl-with-trendy-hat_1258-124917.jpg?t=st=1745045740~exp=1745049340~hmac=d7880beb0b1ff587af9e78b476b9d2e753cedc99b3068f96ba87d19a62b8525b&w=1380")`,
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "center"
-                        // height: "100vh"
+                        slides?.map((item, index) => (
+
+                            <img
+                                src={item}
+                                key={index}
+                                className={`${index == currentSlide ? "opacity-100" : "opacity-0"} absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
+                            />
+                        ))
                     }
-                }
-                className="bg-cover bg-white dark:bg-gray-900 w-full sm:py-9 md:py-16 lg:py-20 xl:py-36">
-                <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
-                    <div className="mr-auto place-self-center lg:col-span-7">
-                        <h1 className="text-gray-800 max-w-2xl mb-5 md:mb-10 text-xl font-semibold tracking-tight leading-none md:text-2xl xl:text-4xl dark:text-white">
-                            Discover Trendy Styles That Define You
-                        </h1>
-                        <h1 className="max-w-2xl mb-4 text-2xl font-medium sm:font-bold tracking-tight md:leading-14 md:text-3xl xl:text-5xl dark:text-white">
-                            New Arrivals. Limited Stock.
-                        </h1>
-                        <p className='mt-1 text-md'>Shop latest fashion essentials delivered fast, fresh, and affordably daily.</p>
-
-                        <Link
-                            className="mt-5 md:mt-12 inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-sm hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
-                        >
-                            Go to Colection <ArrowRight className='ml-0.5' />
-                        </Link>
-                    </div>
-                    <div className="hidden lg:mt-0 lg:col-span-5 lg:flex">
-
-                    </div>
+                    <Button
+                        onClick={() => setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length )}
+                        className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80"
+                        variant="outline"
+                        size="icon"
+                    >
+                        <ChevronLeft />
+                    </Button>
+                    <Button
+                     onClick={() => setCurrentSlide(prev => (prev + 1) % slides.length )}
+                        className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80"
+                        variant="outline"
+                        size="icon"
+                    >
+                        <ChevronRight />
+                    </Button>
                 </div>
+                <section className="py-12 bg-gray-50">
+                    <div className="container mx-auto px-4">
+                        <h2 className="text-3xl font-bold text-center mb-8">
+                            Shop by category
+                        </h2>
+                        <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4'>
+                            {
+                                categoriesWithIcon.map((item) => (
+                                    <Card key={item.label} className="cursor-pointer hover:shadow-lg transition-shadow">
+                                        <CardContent className="flex flex-col items-center justify-center p-6">
+                                            <item.icon className="w-12 h-12 mb-4 text-primary"/>
+                                             <span className="font-bold">{item.label}</span>
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            }
+                        </div>
+                        <h2 className="text-3xl font-bold text-center mb-8 mt-28">
+                            Shop by brands
+                        </h2>
+                        <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
+                            {
+                                brandsWithIcon.map((item) => (
+                                    <Card key={item.label} className="cursor-pointer hover:shadow-lg transition-shadow">
+                                        <CardContent className="flex flex-col items-center justify-center p-6">
+                                            <item.icon className="w-12 h-12 mb-4 text-primary"/>
+                                             <span className="font-bold">{item.label}</span>
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            }
+                        </div>
+                        <h2 className="text-3xl font-bold text-center mb-8 mt-28">
+                            Feature products
+                        </h2>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+                            {
+                                featureProducts?.map(item => (
+                                    <ShoppingProductCard 
+                                    key={item.$id}
+                                    product={item}
+                                    />
+                                ))
+                            }
+                        </div>
+                    </div>
+                </section>
             </div>
+
 
         </section>
     )
 }
-
 export default ShoppingHero

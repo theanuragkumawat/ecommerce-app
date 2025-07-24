@@ -33,7 +33,7 @@ export default function ShoppingListing() {
 
   async function fetchFilterProducts() {
     if (category.length > 0 || brand.length > 0) {
-      const posts = await databaseService.getFilterProducts(category, brand)
+      const posts = await databaseService.getFilterProducts({category, brand})
       if (posts) {
         let products = posts.documents;
         if (selectedSort) {
@@ -53,13 +53,7 @@ export default function ShoppingListing() {
     }
   }
 
-  async function handleGetProductDetails($id){
-        // console.log(id);
-       
-        navigate(`/shop/product/${$id}`)
-        // dispatch(addProductDetails(data))
-        
-  }
+  
 
 
   return (
@@ -91,7 +85,6 @@ export default function ShoppingListing() {
 
               return (
                 <ShoppingProductCard
-                handleGetProductDetails={handleGetProductDetails}
                  key={product.$id} 
                  product={product}
                   />
