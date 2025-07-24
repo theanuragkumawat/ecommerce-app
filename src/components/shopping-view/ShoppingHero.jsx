@@ -4,13 +4,7 @@ import { Link } from 'react-router'
 import bannerOne from "../../assets/banner-1.webp"
 import bannerTwo from "../../assets/banner-2.webp"
 import bannerThree from "../../assets/banner-3.webp"
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from "@/components/ui/carousel"
+
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from '../ui/button'
@@ -41,9 +35,9 @@ function ShoppingHero() {
         { id: "nike", label: "Nike", icon: Shirt },
         { id: "adidas", label: "Adidas", icon: WashingMachine },
         { id: "puma", label: "Puma", icon: ShoppingBasket },
-        { id: "levi", label: "Levi's", icon: Airplay },
+        { id: "levi's", label: "Levi's", icon: Airplay },
         { id: "zara", label: "Zara", icon: Images },
-        { id: "h&m", label: "H&M", icon: Heater },
+        { id: "h%26m", label: "H&M", icon: Heater },
     ];
 
     const [featureProducts, setFeatureProducts] = useState([])
@@ -102,12 +96,14 @@ function ShoppingHero() {
                         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4'>
                             {
                                 categoriesWithIcon.map((item) => (
-                                    <Card key={item.label} className="cursor-pointer hover:shadow-lg transition-shadow">
+                                    <Link to={`/shop/listing?category=${item.id}`} key={item.label} >
+                                    <Card className="cursor-pointer hover:shadow-lg transition-shadow">
                                         <CardContent className="flex flex-col items-center justify-center p-6">
                                             <item.icon className="w-12 h-12 mb-4 text-primary"/>
                                              <span className="font-bold">{item.label}</span>
                                         </CardContent>
                                     </Card>
+                                    </Link>
                                 ))
                             }
                         </div>
@@ -117,12 +113,14 @@ function ShoppingHero() {
                         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
                             {
                                 brandsWithIcon.map((item) => (
-                                    <Card key={item.label} className="cursor-pointer hover:shadow-lg transition-shadow">
+                                    <Link to={`/shop/listing?brand=${item.id}`}  key={item.label}>
+                                    <Card className="cursor-pointer hover:shadow-lg transition-shadow">
                                         <CardContent className="flex flex-col items-center justify-center p-6">
                                             <item.icon className="w-12 h-12 mb-4 text-primary"/>
                                              <span className="font-bold">{item.label}</span>
                                         </CardContent>
                                     </Card>
+                                    </Link>
                                 ))
                             }
                         </div>

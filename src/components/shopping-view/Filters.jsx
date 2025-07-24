@@ -7,7 +7,7 @@ import { addProductsToState } from '@/store/shop/products-slice'
 
 import databaseService from '@/appwrite/config'
 
-function Filters({ category, setCategory, brand, setBrand,fetchFilterProducts }) {
+function Filters({ category, setCategory, brand, setBrand }) {
 
     const dispatch = useDispatch()
 
@@ -139,12 +139,7 @@ function Filters({ category, setCategory, brand, setBrand,fetchFilterProducts })
                     }
                 </div>
             </div>
-            <div className="mb-4">
-                <h3 className="font-semibold text-[1.15rem] mb-2">Price Range</h3>
-                <Input placeholder="Min price" className="mb-2" />
-                <Input placeholder="Max price" />
-            </div>
-            <Button onClick={fetchFilterProducts} className="mt-4 w-full">Apply Filters</Button>
+            
         </aside>
 
     )

@@ -24,7 +24,7 @@ function ShoppingHeader() {
   const navMenu = [
     {
       name: "Home",
-      path: 'home'
+      path: 'home',
     },
     {
       name: "Products",
@@ -32,22 +32,27 @@ function ShoppingHeader() {
     },
     {
       name: "Men",
-      path: 'listing'
+      path: 'listing',
+      id:"men"
     },
     {
       name: "Women",
-      path: 'listing'
+      path: 'listing',
+      id:"women"
     },
     {
       name: "Kids",
-      path: 'listing'
+      path: 'listing',
+      id:"kids"
     },
     {
       name: "Footwear",
-      path: 'listing'
+      path: 'listing',
+      id:"footwear"
     },
     {
       name: "Accessories",
+      id:"accessories",
       path: 'listing'
     },
     {
@@ -90,10 +95,8 @@ function ShoppingHeader() {
                 return (
                   <li key={item.name}>
                     <NavLink
-                      to={item.path}
-                      // className={({ isActive }) =>
-                      //   `py-2 relative font-medium text-sm dark:text-white after:content-[''] after:absolute after:left-0 after:bottom-0.5 after:h-[2px] after:bg-black    dark:after:bg-white after:transition-all after:duration-300  ${isActive ? 'after:w-full text-black' : 'after:w-0 text-gray-700'}`
-                      // }
+                      to={`${item.id ? `${item.path}?category=${item.id}` : item.path}`}
+                      
                       className={
                         `hover:text-gray-950 hover:after:w-full py-2 relative font-medium text-sm dark:text-white after:content-[''] after:absolute after:left-0 after:bottom-0.5 after:h-[2px] after:bg-black    dark:after:bg-white after:transition-all after:duration-300 after:w-0 text-gray-700`
                       }
