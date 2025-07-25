@@ -32,7 +32,7 @@ function Login() {
                 if (userData) {
                     dispatch(storeLogin(userData))
                     toast('Login successfull')
-                    navigate('/shop/home')
+                    navigate('/')
                 }
             }
         } catch (error) {

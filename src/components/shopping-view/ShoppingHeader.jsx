@@ -11,7 +11,8 @@ import { logout as storeLogout } from "../../store/auth-slice"
 import { Badge } from '../ui/badge'
 import { getCartCount } from '@/store/shop/cart-slice'
 import { Button } from '../ui/button'
-
+// import { useSelector } from 'react-redux'
+import { addProductsToCart } from '@/store/shop/cart-slice'
 function ShoppingHeader() {
 
   const navigate = useNavigate()
@@ -24,36 +25,36 @@ function ShoppingHeader() {
   const navMenu = [
     {
       name: "Home",
-      path: 'home',
+      path: '',
     },
     {
       name: "Products",
-      path: 'listing'
+      path: 'shop/listing'
     },
     {
       name: "Men",
-      path: 'listing',
+      path: 'shop/listing',
       id:"men"
     },
     {
       name: "Women",
-      path: 'listing',
+      path: 'shop/listing',
       id:"women"
     },
     {
       name: "Kids",
-      path: 'listing',
+      path: 'shop/listing',
       id:"kids"
     },
     {
       name: "Footwear",
-      path: 'listing',
+      path: 'shop/listing',
       id:"footwear"
     },
     {
       name: "Accessories",
       id:"accessories",
-      path: 'listing'
+      path: 'shop/listing'
     },
     {
       name: "Search",
@@ -69,8 +70,9 @@ function ShoppingHeader() {
     const data = await authService.logout()
     if (data) {
       dispatch(storeLogout())
+      dispatch(addProductsToCart([]))
       toast('Logout successfully')
-      navigate('/login')
+      
     }
   }
 
@@ -139,6 +141,8 @@ function ShoppingHeader() {
               <Badge variant="" className="absolute w-4 h-4 top-0.5 left-6">{cartCount > 0 ? cartCount : "0"}</Badge>
 
             </Link>
+{
+  isAuthenticated &&
 
             <button
               onClick={() => showAccountMenu ? setShowAccountMenu(false) : setShowAccountMenu(true)}
@@ -147,24 +151,9 @@ function ShoppingHeader() {
               type="button"
               className="relative cursor-pointer inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white"
             >
-              {/* <svg
-                className="w-5 h-5 me-1"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width={24}
-                height={24}
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                />
-              </svg> */}
-              {
-                isAuthenticated ?
-                  (<Avatar className="mr-1">
+            
+            
+                  <Avatar className="mr-1">
                     <AvatarFallback className="flex items-center justify-center w-7 h-7 rounded-full bg-black text-white font-extrabold">
 
                       {/* {userData?.name?.[0]?.toUpperCase() || "U"} */}
@@ -173,8 +162,8 @@ function ShoppingHeader() {
                       }
 
                     </AvatarFallback>
-                  </Avatar>) : (<User />)
-              }
+                  </Avatar>
+          
               <div
                 id="userDropdown1"
                 className={` ${showAccountMenu ? "opacity-100 scale-100" : "opacity-0 scale-95 h-0"} absolute transition-all duration-300 ease-in-out transform  top-10 z-10 w-56 divide-y divide-gray-100 overflow-hidden overflow-y-auto rounded-lg bg-white antialiased shadow dark:divide-gray-600 dark:bg-gray-700`}
@@ -190,26 +179,8 @@ function ShoppingHeader() {
                       My Account{" "}
                     </Link>
                   </li>
-                  <li>
-                    <Link
-
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      My Orders{" "}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      Settings{" "}
-                    </Link>
-                  </li>
+                  
+                  
                   <li>
                     <Link
                       to="wishlist"
@@ -220,26 +191,7 @@ function ShoppingHeader() {
                       My Wishlist{" "}
                     </Link>
                   </li>
-                  <li>
-                    <Link
-
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      Delivery Addresses{" "}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      Billing Data{" "}
-                    </Link>
-                  </li>
+                
                 </ul>
                 <div
                   onClick={handleLogout}
@@ -252,6 +204,7 @@ function ShoppingHeader() {
                 </div>
               </div>
             </button>
+            }
             {
               !isAuthenticated &&
               <Link to="/login">

@@ -43,13 +43,6 @@ const cartItems = useSelector(state => state.cart.cartItems)
   }, [userInfo])
   
 
-
-  useEffect(() => {
-    if (location.pathname === '/') {
-      navigate('shop/home')
-    }  
-  }, [isAuthenticated])
-
   useEffect(() => {
     authService.getCurrentUser()
       .then((userData) => {
@@ -86,14 +79,14 @@ const cartItems = useSelector(state => state.cart.cartItems)
               <Route path="features" element={<AdminFeatures />} />
             </Route>
 
-            <Route path="/shop" element={<ShopingLayout />}>
-              <Route path="home" element={<ShoppingHome />} />
-              <Route path="cart" element={<ShoppingCart />} />
-              <Route path="wishlist" element={<ShoppingWishlist />} />
-              <Route path="account" element={<ShoppingAccount />} />
-              <Route path="listing" element={<ShoppingListing />} />
-              <Route path="checkout" element={<ShoppingCheckout />} />
-              <Route path="product/:productId" element={<ShoppingProductOverview />} />
+            <Route path="" element={<ShopingLayout />}>
+              <Route path="" element={<ShoppingHome />} />
+              <Route path="/shop/cart" element={<ShoppingCart />} />
+              <Route path="/shop/wishlist" element={<ShoppingWishlist />} />
+              <Route path="/shop/account" element={<ShoppingAccount />} />
+              <Route path="/shop/listing" element={<ShoppingListing />} />
+              <Route path="/shop/checkout" element={<ShoppingCheckout />} />
+              <Route path="/shop/product/:productId" element={<ShoppingProductOverview />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

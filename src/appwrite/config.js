@@ -319,6 +319,67 @@ export class DatabaseService {
     }
   }
 
+  //Address Service---------------------
+
+  async createAddress(addressdata) {
+    try {
+      const data = await this.databases.createDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteAddressCollectionId,
+        ID.unique(),
+          addressdata
+      );
+
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: createAddress :: error", error);
+    }
+  }
+
+  async updateAddress({address,pincode,phone,notes,city},id) {
+    try {
+      const data = await this.databases.updateDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteAddressCollectionId,
+        id,
+          {address,pincode,phone,notes,city}
+      );
+
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: updateAddress :: error", error);
+    }
+  }
+
+  async deleteAddress(addressId) {
+    try {
+      const data = await this.databases.deleteDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteAddressCollectionId,
+        addressId
+      );
+
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: deleteAddress :: error", error);
+    }
+  }
+
+
+  async getAddress(userId) {
+    try {
+      const data = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteAddressCollectionId,
+        [Query.equal("userId", userId)]
+      );
+
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: getAddress :: error", error);
+    }
+  }
+
 }
 
 const databaseService = new DatabaseService();
