@@ -11,16 +11,16 @@ function ShoppingProductOverview() {
 
     const { productId } = useParams()
     const [image, setImage] = useState("i")
-    const [productData, setProductData] = useState(false);
+    const [product, setProduct] = useState(false);
     const dispatch = useDispatch()
-    const {userData} = useSelector(state => state.auth)
+    const {userData,isAuthenticated} = useSelector(state => state.auth)
     const {cartItems} = useSelector(state => state.cart)
     const {wishlistItems} = useSelector(state => state.wishlist)
     
     async function getProductDetails() {
         const data = await databaseService.getProduct(productId)
         if (data) {
-            setProductData(data)
+            setProduct(data)
             const url = await databaseService.getFilePreview(data.image)
             setImage(url)
         }
@@ -35,7 +35,7 @@ function ShoppingProductOverview() {
                 let temp = cartItems.slice()
                 if (temp.length > 0) {
                     const existing = temp.find(
-                        (i) => i.productId === productData.$id
+                        (i) => i.productId === product.$id
                     );
                     if (existing) {
                         temp = temp.map(item => item.productId == existing.productId ? { ...item, quantity: item.quantity + 1 } : item)
@@ -45,15 +45,16 @@ function ShoppingProductOverview() {
                             dispatch(addProductsToCart(JSON.parse(data.products)))
                         }
                     } else {
-                        temp.push({ productId: productData.$id, quantity: 1 });
+                        temp.push({ productId: product.$id, quantity: 1,price:product.price });
                         const data = await databaseService.updateCart(userData.$id, temp);
                         if (data) {
                             dispatch(addProductsToCart(JSON.parse(data.products)))
+                            toast("Product added to cart")
                         }
                     }
                 } else {
                     let productArr = [
-                        { productId: productData.$id, quantity: 1 }
+                        { productId: product.$id, quantity: 1,price:product.price }
                     ]
                     const response = await databaseService.createCart(userData.$id, productArr);
                     if (response) {
@@ -64,8 +65,30 @@ function ShoppingProductOverview() {
                     }
                 }
             } else {
-                toast("Please log in to add products to cart!")
-                console.log("Please log in to add products to cart");
+                //for local storage
+                if (cartItems.length > 0) {
+                    let temp = cartItems.slice()
+                    const existing = temp.find((i) => i.productId === product.$id)
+                    if (existing) {
+                        console.log(existing);
+                        
+                        temp = temp.map(item => item.productId == product.$id ? { ...item, quantity: item.quantity + 1 } : item)
+                        localStorage.setItem("cart", JSON.stringify(temp))
+                        dispatch(addProductsToCart(temp))
+                    } else{
+                        temp.push({ productId: product.$id, quantity: 1,price: product.price});
+                        localStorage.setItem("cart", JSON.stringify(temp))
+                        dispatch(addProductsToCart(temp))
+                    }
+
+
+                } else {
+                    let productArr = [
+                        { productId: product.$id, quantity: 1,price:product.price }
+                    ]
+                    localStorage.setItem("cart", JSON.stringify(productArr))
+                    dispatch(addProductsToCart(productArr))
+                }
             }
         } catch (error) {
             console.log(error);
@@ -74,12 +97,15 @@ function ShoppingProductOverview() {
 
     async function addToWishlistHandler(e) {
         e.stopPropagation()
+        if (!isAuthenticated) {
+            toast.error("Please login for wishlisting a product")
+        }
         try {
             let temp = wishlistItems.slice()
             if (temp.length > 0) {
-                const existing = temp.find((i) => (i == productData.$id));
+                const existing = temp.find((i) => (i == product.$id));
                 if (existing) {
-                    temp = temp.filter(item => item != productData.$id)
+                    temp = temp.filter(item => item != product.$id)
                     if (temp.length == 0) {
                         const response = await databaseService.deleteWishlist(userData.$id);
                         dispatch(addProductsToWishlist([]))
@@ -95,7 +121,7 @@ function ShoppingProductOverview() {
                     }
 
                 } else {
-                    temp.push(productData.$id);
+                    temp.push(product.$id);
                     const data = await databaseService.updateWishlist(userData.$id, temp);
                     if (data) {
                         dispatch(addProductsToWishlist(JSON.parse(data.products)))
@@ -104,7 +130,7 @@ function ShoppingProductOverview() {
                 }
             } else {
 
-                let productArr = [productData.$id]
+                let productArr = [product.$id]
                 if (userData) {
                     const data = await databaseService.createWishlist(userData.$id, productArr);
                     if (data) {
@@ -117,7 +143,7 @@ function ShoppingProductOverview() {
             console.log(error);
         }
     }
-    return productData ? (
+    return product ? (
         <section className="py-8 bg-white md:py-16 dark:bg-gray-900 antialiased">
             <div className="max-w-screen-xl px-4 mx-auto 2xl:px-0">
                 <div className="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
@@ -131,15 +157,15 @@ function ShoppingProductOverview() {
                     </div>
                     <div className="mt-6 sm:mt-8 lg:mt-0">
                         <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
-                            {productData.title}
+                            {product.title}
                         </h1>
                         <div className="mt-4 sm:items-center sm:gap-1 sm:flex">
-                            <p className={`${productData.salePrice > 0 ? "text-2xl line-through text-gray-500 font-semibold" : "text-2xl sm:text-3xl font-extrabold text-gray-900"}   dark:text-white`}>
-                                ${productData.price}
+                            <p className={`${product.salePrice > 0 ? "text-2xl line-through text-gray-500 font-semibold" : "text-2xl sm:text-3xl font-extrabold text-gray-900"}   dark:text-white`}>
+                                ${product.price}
                             </p>
                             {
-                                productData.salePrice > 0 ? <p className={`text-3xl text-gray-900 font-extrabold leading-tight  dark:text-white`}>
-                                    ${productData.salePrice}
+                                product.salePrice > 0 ? <p className={`text-3xl text-gray-900 font-extrabold leading-tight  dark:text-white`}>
+                                    ${product.salePrice}
                                 </p> : null
                             }
                             <div className="flex items-center gap-2 mt-2 sm:mt-0">
@@ -268,7 +294,7 @@ function ShoppingProductOverview() {
                         </div>
                         <hr className="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
                         <p className="mb-6 text-gray-500 dark:text-gray-400">
-                            {productData.description}
+                            {product.description}
                         </p>
 
                     </div>

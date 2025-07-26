@@ -252,7 +252,8 @@ export class DatabaseService {
 
       return data;
     } catch (error) {
-      throw error
+      console.log("get cart error",error);
+      return false
     }
   }
 
@@ -316,6 +317,7 @@ export class DatabaseService {
       return data;
     } catch (error) {
       console.log("Apwrite service :: getWishlist :: error", error);
+      return false
     }
   }
 

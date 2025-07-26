@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route,useLocation, useNavigate } from "react-router";
+import { Routes, Route, useLocation, useNavigate } from "react-router";
 import { Layout } from "./components";
-import { AdminDashboard, AdminFeatures, AdminOrders, AdminProducts, Login, Register, ShoppingAccount, ShoppingCart, ShoppingCheckout, ShoppingHome, ShoppingListing, ShoppingProductOverview, ShoppingWishlist, UnauthPage } from "./pages";
+import { AdminDashboard, AdminFeatures, AdminOrders, AdminProducts, Login, Register, ShoppingAccount, ShoppingCart, ShoppingCheckout, ShoppingHome, ShoppingListing, ShoppingProductOverview, ShoppingWishlist,ShoppingOrdersAddress, UnauthPage } from "./pages";
 import AdminLayout from "./components/admin-view/AdminLayout";
 import ShopingLayout from "./components/shopping-view/ShopingLayout";
 import NotFound from "./pages/NotFound";
@@ -17,47 +17,59 @@ function App() {
   const dispatch = useDispatch()
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
   const userInfo = useSelector(state => state.auth.userData)
-const cartItems = useSelector(state => state.cart.cartItems)
+  const cartItems = useSelector(state => state.cart.cartItems)
 
   const [isLoading, setIsLoading] = useState(true)
   const location = useLocation()
   const navigate = useNavigate()
   // console.log(cartItems);
 
-  async function getCart() {
-    if (userInfo) {
-      try {
-        const cart = await databaseService.getCart(userInfo.$id);
-        dispatch(addProductsToCart(JSON.parse(cart.products)))
-        const wishlist = await databaseService.getWishlist(userInfo.$id)
-        dispatch(addProductsToWishlist(JSON.parse(wishlist.products)))
-      } catch (error) {
-        // console.log("App.jsx getCart error " + error);
-      }
-    }
-  }
-  
+  const [authCheckComplete, setAuthCheckComplete] = useState(false)
 
-  useEffect(() => {
-    getCart();
-  }, [userInfo])
-  
+  async function getCart() {
+      if(!authCheckComplete){
+          return;
+      }
+    try {
+      if (userInfo) {
+        const cart = await databaseService.getCart(userInfo.$id);
+        cart ? dispatch(addProductsToCart(JSON.parse(cart.products))) : dispatch(addProductsToCart([]))
+        const wishlist = await databaseService.getWishlist(userInfo.$id)
+        wishlist ? dispatch(addProductsToWishlist(JSON.parse(wishlist.products))) : null
+      } else {
+        const tempCart = localStorage.getItem('cart')
+        
+        tempCart ? dispatch(addProductsToCart(JSON.parse(tempCart))) : null
+      }
+    } catch (error) {
+      console.log("App.jsx getCart error " + error);
+    }
+
+  }
 
   useEffect(() => {
     authService.getCurrentUser()
       .then((userData) => {
         if (userData) {
-          dispatch(storeLogin(userData ))
-          console.log("User logged in, details:",userData);
+          dispatch(storeLogin(userData))
+          localStorage.removeItem('cart');
           setIsLoading(false)
-
+          console.log(userData);
+          
         } else {
           dispatch(storeLogout())
           setIsLoading(false)
         }
       })
-
+      .finally(() => {
+        setAuthCheckComplete(true)
+      })
   }, [])
+
+  
+useEffect(() => {
+  getCart()
+},[authCheckComplete,isAuthenticated])
 
 
   return (
@@ -81,12 +93,13 @@ const cartItems = useSelector(state => state.cart.cartItems)
 
             <Route path="" element={<ShopingLayout />}>
               <Route path="" element={<ShoppingHome />} />
-              <Route path="/shop/cart" element={<ShoppingCart />} />
-              <Route path="/shop/wishlist" element={<ShoppingWishlist />} />
-              <Route path="/shop/account" element={<ShoppingAccount />} />
-              <Route path="/shop/listing" element={<ShoppingListing />} />
-              <Route path="/shop/checkout" element={<ShoppingCheckout />} />
-              <Route path="/shop/product/:productId" element={<ShoppingProductOverview />} />
+              <Route path="/cart" element={<ShoppingCart />} />
+              <Route path="/wishlist" element={<ShoppingWishlist />} />
+              <Route path="/account" element={<ShoppingAccount />} />
+              <Route path="/orders" element={<ShoppingOrdersAddress />} />
+              <Route path="/listing" element={<ShoppingListing />} />
+              <Route path="/checkout" element={<ShoppingCheckout />} />
+              <Route path="/product/:productId" element={<ShoppingProductOverview />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

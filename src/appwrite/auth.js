@@ -42,7 +42,7 @@ class AuthService {
             return await this.account.get()
         } catch (error) {
             console.log("get account error" + error);
-            
+            return false
         }
     }
 
@@ -68,7 +68,7 @@ class AuthService {
         try {
             return await this.account.updateVerification(userId,secret);
         } catch (error) {   
-            console.log("update Verify error" + error);
+            throw error
         }
     }
 

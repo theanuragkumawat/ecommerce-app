@@ -5,7 +5,6 @@ import bannerOne from "../../assets/banner-1.webp"
 import bannerTwo from "../../assets/banner-2.webp"
 import bannerThree from "../../assets/banner-3.webp"
 
-
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from '../ui/button'
 import databaseService from '@/appwrite/config'
@@ -96,7 +95,7 @@ function ShoppingHero() {
                         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4'>
                             {
                                 categoriesWithIcon.map((item) => (
-                                    <Link to={`/shop/listing?category=${item.id}`} key={item.label} >
+                                    <Link to={`/listing?category=${item.id}`} key={item.label} >
                                     <Card className="cursor-pointer hover:shadow-lg transition-shadow">
                                         <CardContent className="flex flex-col items-center justify-center p-6">
                                             <item.icon className="w-12 h-12 mb-4 text-primary"/>
@@ -113,7 +112,7 @@ function ShoppingHero() {
                         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
                             {
                                 brandsWithIcon.map((item) => (
-                                    <Link to={`/shop/listing?brand=${item.id}`}  key={item.label}>
+                                    <Link to={`/listing?brand=${item.id}`}  key={item.label}>
                                     <Card className="cursor-pointer hover:shadow-lg transition-shadow">
                                         <CardContent className="flex flex-col items-center justify-center p-6">
                                             <item.icon className="w-12 h-12 mb-4 text-primary"/>
@@ -140,8 +139,6 @@ function ShoppingHero() {
                     </div>
                 </section>
             </div>
-
-
         </section>
     )
 }

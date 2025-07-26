@@ -4,12 +4,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { data, Link } from 'react-router'
 import { addProductsToCart } from '@/store/shop/cart-slice';
 import { addProductsToWishlist } from '@/store/shop/wishlist-slice';
+import { toast } from 'sonner';
 
-function CartProductCard({ productId, quantity }) {
-  const [image, setImage] = useState(null)
-  const {cartItems} = useSelector(state => state.cart)
+function CartProductCard({ productId, quantity, className = "" }) {
+  const [image, setImage] = useState('i')
+  const { cartItems } = useSelector(state => state.cart)
   const { wishlistItems } = useSelector(state => state.wishlist)
-  const userData = useSelector(state => state.auth.userData)
+  const { userData, isAuthenticated } = useSelector(state => state.auth)
   const dispatch = useDispatch()
   const [productDetails, setProductDetails] = useState(false)
 
@@ -28,6 +29,15 @@ function CartProductCard({ productId, quantity }) {
   }
 
   async function incrementHandler() {
+
+    if (!isAuthenticated) {
+      let temp = cartItems.slice();
+      temp = temp.map(item => item.productId == productId ? { ...item, quantity: item.quantity + 1 } : item)
+      localStorage.setItem("cart", JSON.stringify(temp))
+      dispatch(addProductsToCart(temp))
+      return;
+    }
+
     try {
       let temp = cartItems.slice();
       temp = temp.map(item => item.productId == productId ? { ...item, quantity: item.quantity + 1 } : item)
@@ -42,6 +52,28 @@ function CartProductCard({ productId, quantity }) {
 
   async function decrementHandler() {
     let temp = cartItems.slice();
+
+    if (!isAuthenticated) {
+
+      if (quantity > 1) {
+        temp = temp.map(item => item.productId == productId ? { ...item, quantity: item.quantity - 1 } : item)
+        localStorage.setItem("cart", JSON.stringify(temp))
+        dispatch(addProductsToCart(temp))
+      } else if (quantity == 1) {
+        temp = temp.filter(item => item.productId != productId);
+        if (temp.length == 0) {
+          localStorage.removeItem('cart');
+          dispatch(addProductsToCart([]))
+        } else {
+          localStorage.setItem("cart", JSON.stringify(temp))
+          dispatch(addProductsToCart(temp))
+        }
+
+      }
+
+      return;
+    }
+
     if (quantity > 1) {
       try {
         temp = temp.map(item => item.productId == productId ? { ...item, quantity: item.quantity - 1 } : item)
@@ -55,9 +87,16 @@ function CartProductCard({ productId, quantity }) {
     } else {
       try {
         temp = temp.filter(item => item.productId != productId);
-        const data = await databaseService.updateCart(userData.$id, temp);
-        if (data) {
-          dispatch(addProductsToCart(JSON.parse(data.products)))
+        if (temp.length == 0) {
+          const data = await databaseService.deleteCart(userData.$id);
+          toast('deleted')
+          dispatch(addProductsToCart([]));
+        } else {
+
+          const data = await databaseService.updateCart(userData.$id, temp);
+          if (data) {
+            dispatch(addProductsToCart(JSON.parse(data.products)))
+          }
         }
       } catch (error) {
         console.log("Error while decrement quantity" + error);
@@ -65,9 +104,19 @@ function CartProductCard({ productId, quantity }) {
     }
   }
 
-
-  
   async function deleteHandler() {
+    if (!isAuthenticated) {
+      let temp = cartItems.slice();
+      temp = temp.filter(item => item.productId != productId);
+      if (temp.length == 0) {
+        localStorage.removeItem('cart');
+        dispatch(addProductsToCart([]));
+      } else {
+        localStorage.setItem("cart", JSON.stringify(temp))
+        dispatch(addProductsToCart(temp))
+      }
+      return
+    }
     try {
       let temp = cartItems.slice();
       temp = temp.filter(item => item.productId != productId);
@@ -91,6 +140,10 @@ function CartProductCard({ productId, quantity }) {
 
   async function moveToWishlist() {
     try {
+      if (!isAuthenticated) {
+        toast.error("Please login for wishlisting a product")
+        return;
+      }
       let temp = cartItems.slice()
       temp = temp.filter(item => item.productId != productId)
       if (temp.length == 0) {
@@ -126,13 +179,13 @@ function CartProductCard({ productId, quantity }) {
   }, [])
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+    <div className={`${className} rounded-lg border border-gray-200 bg-white sm:p-1 md:py-0.5 shadow-sm dark:border-gray-700 dark:bg-gray-800 `}>
       <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
         <Link href="#" className="shrink-0 md:order-1">
           <img
-            className="h-20 dark:hidden"
+            className="h-36 dark:hidden"
             src={image}
-            alt="imac image"
+            alt=""
           />
 
         </Link>
@@ -198,7 +251,7 @@ function CartProductCard({ productId, quantity }) {
             </button>
           </div>
           <div className="text-end md:order-4 md:w-32">
-            <p className="text-base font-bold text-gray-900 dark:text-white">
+            <p className="pr-4 text-base font-bold text-gray-900 dark:text-white">
               ${productDetails.salePrice > 0 ? productDetails.salePrice : productDetails.price}
             </p>
           </div>

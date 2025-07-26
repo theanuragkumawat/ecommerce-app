@@ -38,6 +38,7 @@ function Address() {
 
   const [addressData, setaddressData] = useState(initialDetails)
   const [isEditing, setIsEditing] = useState(false)
+  
   const create = async (e) => {
     e.preventDefault()
     console.log("click");
@@ -69,7 +70,7 @@ function Address() {
 
   return (
     <div>
-      <div className='flex flex-col items-center sm:flex-row gap-3 mt-6'>
+      <div className='flex flex-col items-center sm:flex-row gap-3 '>
         {
           addressList?.map(item => (
             <AddressCard key={item.$id} addressData={item} getAllAddress={getAllAddress} setaddressData={setaddressData} setIsEditing={setIsEditing} />
@@ -78,7 +79,7 @@ function Address() {
       </div>
       <form onSubmit={create}>
         <div className="flex flex-col gap-3 mt-12">
-          <h2 className='text-2xl font-semibold mb-1'>Add New Address</h2>
+          <h2 className='text-2xl font-semibold mb-1'>{isEditing ? "Edit Address" : "Add New Address"}</h2>
           <div className="grid w-full gap-1.5">
             <Label className="mb-1">Address:</Label>
             <Input placeholder="Enter your address"

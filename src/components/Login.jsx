@@ -8,6 +8,8 @@ import { useNavigate } from "react-router";
 import authService from "@/appwrite/auth";
 import { login as storeLogin } from "../store/auth-slice"
 import { toast } from "sonner"
+import databaseService from "@/appwrite/config";
+import { addProductsToCart } from "@/store/shop/cart-slice";
 
 function Login() {
     const dispatch = useDispatch()
@@ -31,6 +33,23 @@ function Login() {
                 const userData = await authService.getCurrentUser();
                 if (userData) {
                     dispatch(storeLogin(userData))
+
+                    const cart = await databaseService.getCart(userData.$id)
+                    if(cart){
+                        localStorage.removeItem('cart');
+                    } else{
+                        const tempCart = localStorage.getItem('cart')
+                        if(tempCart){
+
+                            const data = await databaseService.createCart(userData.$id,JSON.parse(tempCart))
+                            if(data){
+                                console.log(data);
+                                
+                                dispatch(addProductsToCart(JSON.parse(data.products)))
+                                localStorage.removeItem('cart');
+                            }
+                        }
+                    }
                     toast('Login successfull')
                     navigate('/')
                 }

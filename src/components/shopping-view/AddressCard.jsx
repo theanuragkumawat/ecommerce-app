@@ -24,13 +24,11 @@ function AddressCard({ addressData, getAllAddress,setaddressData,setIsEditing })
     return (
         <Card className={'p-3 gap-4 w-xs sm:w-sm'}>
             <div className=''>
-                <p className='font-semibold mb-0.5'>Address: {addressData.address}</p>
-                <p className='font-semibold mb-0.5'>City: {addressData.city}</p>
-                <p className='font-semibold mb-0.5'>Pincode: {addressData.pincode}</p>
-                <p className='font-semibold mb-0.5'>Phone: {addressData.phone}</p>
-              
-                    
-                    <p className='font-semibold'>Notes: {addressData.notes ? addressData.notes : ""}</p>
+                <p className='font-semibold mb-0.5'>Address: <span className='font-normal text-sm font-'>{addressData.address}</span></p>
+                <p className='font-semibold mb-0.5'>City: <span className='font-normal text-sm font-'>{addressData.city}</span></p>
+                <p className='font-semibold mb-0.5'>Pincode: <span className='font-normal text-sm font-'>{addressData.pincode}</span></p>
+                <p className='font-semibold mb-0.5'>Phone: <span className='font-normal text-sm font-'>{addressData.phone}</span></p>
+                <p className='font-semibold'>Notes: <span className='font-normal text-sm font-'>{addressData.notes ? addressData.notes : ""}</span></p>
              
             </div>
             <div className='flex justify-between'>

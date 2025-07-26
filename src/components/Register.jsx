@@ -5,10 +5,12 @@ import { Input } from "./ui/input";
 import authService from "../appwrite/auth";
 import { useNavigate } from "react-router";
 import { toast } from "sonner"
-
+import { useDispatch } from "react-redux";
+import databaseService from "@/appwrite/config";
+import { addProductsToCart } from "@/store/shop/cart-slice";
 
 function Register({setEmail,setVerifying}) {
-
+const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const [error, setError] = useState('')
@@ -24,14 +26,22 @@ function Register({setEmail,setVerifying}) {
         try {
             const userData = await authService.createAccount(userDetails)
             if (userData) {
+
                 toast('Registration successful')
                 setEmail(userDetails.email)
-                setVerifying(true)
                 const session = await authService.login(userDetails)
                 if(session){
+                    const tempCart = localStorage.getItem('cart')
+                        if(tempCart){
+                            const data = await databaseService.createCart(userData.$id,JSON.parse(tempCart))
+                            if(data){
+                                dispatch(addProductsToCart(JSON.parse(data.products)))
+                                localStorage.removeItem('cart');
+                            }
+                        }
                     const verifyData = await authService.getVerification()
                     if(verifyData){
-                        console.log(verifyData);
+                        setVerifying(true)
                     }
                 }
             }

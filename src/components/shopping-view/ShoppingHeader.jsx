@@ -29,32 +29,32 @@ function ShoppingHeader() {
     },
     {
       name: "Products",
-      path: 'shop/listing'
+      path: '/listing'
     },
     {
       name: "Men",
-      path: 'shop/listing',
+      path: '/listing',
       id:"men"
     },
     {
       name: "Women",
-      path: 'shop/listing',
+      path: '/listing',
       id:"women"
     },
     {
       name: "Kids",
-      path: 'shop/listing',
+      path: '/listing',
       id:"kids"
     },
     {
       name: "Footwear",
-      path: 'shop/listing',
+      path: '/listing',
       id:"footwear"
     },
     {
       name: "Accessories",
       id:"accessories",
-      path: 'shop/listing'
+      path: '/listing'
     },
     {
       name: "Search",
@@ -72,7 +72,6 @@ function ShoppingHeader() {
       dispatch(storeLogout())
       dispatch(addProductsToCart([]))
       toast('Logout successfully')
-      
     }
   }
 
@@ -84,10 +83,10 @@ function ShoppingHeader() {
         <div className="flex items-center justify-between">
           <div className="shrink-0">
             <Link
-              to="/shop/home"
+              to="/"
               className="flex justify-center items-center cursor-pointer w-auto h-8 dark:hidden text-lg font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500"
             >
-              <Store className='inline mr-2 ' />Ecommerce
+              <Store className='inline mr-2'/>Ecommerce
             </Link>
           </div>
           <ul className="hidden lg:flex items-center justify-start gap-6 md:gap-7 py-3 sm:justify-center">
@@ -177,6 +176,16 @@ function ShoppingHeader() {
                     >
                       {" "}
                       My Account{" "}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="orders"
+                      title=""
+                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                    >
+                      {" "}
+                      My Orders{" "}
                     </Link>
                   </li>
                   

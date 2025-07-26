@@ -58,7 +58,7 @@ export default function ShoppingListing() {
             newQuery.set("brand", brand.join(","));
           }
 
-          navigate(`/shop/listing?${newQuery.toString()}`);
+          navigate(`/listing?${newQuery.toString()}`);
           setCurrentProducts(products)
 
         } else {
@@ -69,13 +69,13 @@ export default function ShoppingListing() {
           if (brand.length > 0) {
             newQuery.set("brand", brand.join(","));
           }
-          navigate(`/shop/listing?${newQuery.toString()}`);
+          navigate(`/listing?${newQuery.toString()}`);
           setCurrentProducts(products)
         }
       }
     } else if (selectedSort) {
       let products = useSort(productsList, selectedSort);
-      navigate(`/shop/listing`);
+      navigate(`/listing`);
       setCurrentProducts(products)
     } else {
 
@@ -86,7 +86,7 @@ export default function ShoppingListing() {
         }
       });
 
-      navigate(`/shop/listing`);
+      navigate(`/listing`);
     }
   }
 
@@ -95,13 +95,7 @@ export default function ShoppingListing() {
   }, [category, brand])
 
 
-
-
-
   return (
-
-
-
     <div className="flex flex-col lg:flex-row min-h-screen p-4 gap-4">
       <ProductDetailsDialog setOpen={"r"} />
       {/* Filters Sidebar */}

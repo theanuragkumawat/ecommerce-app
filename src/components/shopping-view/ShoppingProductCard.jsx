@@ -1,7 +1,7 @@
 import databaseService from '@/appwrite/config';
 import { Heart, Import } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
-import { Link,useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux';
 import { addProductsToCart } from '@/store/shop/cart-slice';
 import { toast } from 'sonner';
@@ -11,7 +11,7 @@ import { addProductsToWishlist } from '@/store/shop/wishlist-slice';
 function ShoppingProductCard({ product }) {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const userData = useSelector(state => state.auth.userData)
+    const { userData, isAuthenticated } = useSelector(state => state.auth)
     const cartItems = useSelector(state => state.cart.cartItems)
     const wishlistItems = useSelector(state => state.wishlist.wishlistItems)
 
@@ -26,12 +26,9 @@ function ShoppingProductCard({ product }) {
         getImage()
     }, [])
 
-    async function handleGetProductDetails($id){
-            // console.log(id);
-           
-            navigate(`/shop/product/${$id}`)
-            
-      }
+    async function handleGetProductDetails($id) {
+        navigate(`/product/${$id}`)
+    }
 
     async function addToCartHandler(e) {
         e.stopPropagation();
@@ -50,7 +47,7 @@ function ShoppingProductCard({ product }) {
                             dispatch(addProductsToCart(JSON.parse(data.products)))
                         }
                     } else {
-                        temp.push({ productId: product.$id, quantity: 1 });
+                        temp.push({ productId: product.$id, quantity: 1,price:product.price });
                         const data = await databaseService.updateCart(userData.$id, temp);
                         if (data) {
                             dispatch(addProductsToCart(JSON.parse(data.products)))
@@ -59,7 +56,7 @@ function ShoppingProductCard({ product }) {
                     }
                 } else {
                     let productArr = [
-                        { productId: product.$id, quantity: 1 }
+                        { productId: product.$id, quantity: 1,price:product.price }
                     ]
                     const response = await databaseService.createCart(userData.$id, productArr);
                     if (response) {
@@ -70,28 +67,53 @@ function ShoppingProductCard({ product }) {
                     }
                 }
             } else {
-                toast("Please log in to add products to cart!")
-                console.log("Please log in to add products to cart");
+                //for local storage
+                if (cartItems.length > 0) {
+                    let temp = cartItems.slice()
+                    const existing = temp.find((i) => i.productId === product.$id)
+                    if (existing) {
+                        console.log(existing);
+                        
+                        temp = temp.map(item => item.productId == product.$id ? { ...item, quantity: item.quantity + 1 } : item)
+                        localStorage.setItem("cart", JSON.stringify(temp))
+                        dispatch(addProductsToCart(temp))
+                    } else{
+                        temp.push({ productId: product.$id, quantity: 1,price: product.price});
+                        localStorage.setItem("cart", JSON.stringify(temp))
+                        dispatch(addProductsToCart(temp))
+                    }
+
+
+                } else {
+                    let productArr = [
+                        { productId: product.$id, quantity: 1,price:product.price }
+                    ]
+                    localStorage.setItem("cart", JSON.stringify(productArr))
+                    dispatch(addProductsToCart(productArr))
+                }
             }
         } catch (error) {
             console.log(error);
-        } 
+        }
     }
 
     async function addToWishlistHandler(e) {
         e.stopPropagation()
+        if (!isAuthenticated) {
+            toast.error("Please login for wishlisting a product")
+        }
         try {
             let temp = wishlistItems.slice()
             if (temp.length > 0) {
                 const existing = temp.find((i) => (i == product.$id));
                 if (existing) {
                     temp = temp.filter(item => item != product.$id)
-                    if(temp.length == 0){
+                    if (temp.length == 0) {
                         const response = await databaseService.deleteWishlist(userData.$id);
                         dispatch(addProductsToWishlist([]))
-                        console.log(response,"wishlist deleted");
-                        
-                    } else{
+                        console.log(response, "wishlist deleted");
+
+                    } else {
 
                         const data = await databaseService.updateWishlist(userData.$id, temp);
                         if (data) {

@@ -12,7 +12,7 @@ import ShoppingListing from "./shopping-view/ShoppingListing";
 import ShoppingProductOverview from "./shopping-view/ShoppingProductOverview";
 import ShoppingCart from "./shopping-view/ShoppingCart";
 import ShoppingWishlist from "./shopping-view/ShoppingWishlist";
-
+import ShoppingOrdersAddress from "./shopping-view/ShoppingOrdersAddress";
 import UnauthPage from "./UnauthPage";
 
 export {
@@ -27,6 +27,7 @@ export {
   ShoppingHome,
   ShoppingCart,
   ShoppingWishlist,
+  ShoppingOrdersAddress,
   ShoppingListing,
   ShoppingProductOverview,
   UnauthPage

@@ -61,7 +61,7 @@ function Orders() {
 
   return (
     <div className='text-orange-6s00'>
-      <h1 className='font-semibold text-xl sm:mt-1 sm:mb-3'>Order History</h1>
+      <h1 className='font-semibold text-xl sm:mt-1 sm:mb-3'>All Orders</h1>
       <Table>
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
