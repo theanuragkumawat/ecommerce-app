@@ -1,5 +1,6 @@
 import { Client, Databases, Storage, ID, Query } from "appwrite";
 import conf from "@/conf/conf";
+// import paypal from "../paypal/paypal.js" 
 
 export class DatabaseService {
   client = new Client();
@@ -124,7 +125,7 @@ export class DatabaseService {
     }
   }
 
-  async getFilterProducts({category, brand, limit=0}) {
+  async getFilterProducts({ category, brand, limit = 0 }) {
     const queries = [];
 
     if (category?.length > 0) {
@@ -133,7 +134,7 @@ export class DatabaseService {
     if (brand?.length > 0) {
       queries.push(Query.equal("brand", brand));
     }
-    if(limit){
+    if (limit) {
       queries.push(Query.limit(8))
     }
     try {
@@ -252,7 +253,7 @@ export class DatabaseService {
 
       return data;
     } catch (error) {
-      console.log("get cart error",error);
+      console.log("get cart error", error);
       return false
     }
   }
@@ -321,7 +322,7 @@ export class DatabaseService {
     }
   }
 
-  //Address Service---------------------
+  //_____________Address Service---------------------
 
   async createAddress(addressdata) {
     try {
@@ -329,7 +330,7 @@ export class DatabaseService {
         conf.appwriteDatabaseId,
         conf.appwriteAddressCollectionId,
         ID.unique(),
-          addressdata
+        addressdata
       );
 
       return data;
@@ -338,13 +339,13 @@ export class DatabaseService {
     }
   }
 
-  async updateAddress({address,pincode,phone,notes,city},id) {
+  async updateAddress({ address, pincode, phone, notes, city }, id) {
     try {
       const data = await this.databases.updateDocument(
         conf.appwriteDatabaseId,
         conf.appwriteAddressCollectionId,
         id,
-          {address,pincode,phone,notes,city}
+        { address, pincode, phone, notes, city }
       );
 
       return data;
@@ -381,6 +382,90 @@ export class DatabaseService {
       console.log("Apwrite service :: getAddress :: error", error);
     }
   }
+
+  //Order
+  // async createOrder(
+  //   {
+  //     userId,
+  //     cartItems,
+  //     addressInfo,
+  //     orderStatus,
+  //     paymentMethod,
+  //     paymentStatus,
+  //     totalAmount,
+  //     orderDate,
+  //     orderUpdateDate,
+  //     paymentId,
+  //     payerId,
+  //     cartId,
+  //   }
+  // ) {
+  //   try {
+  //     const create_payment_json = {
+  //       intent: "sale",
+  //       payer: {
+  //         payment_method: "paypal",
+  //       },
+  //       redirect_urls: {
+  //         return_url: "http://localhost:5173/shop/paypal-return",
+  //         cancel_url: "http://localhost:5173/shop/paypal-cancel",
+  //       },
+  //       transactions: [
+  //         {
+  //           item_list: {
+  //             items: cartItems.map((item) => ({
+  //               name: item.title,
+  //               sku: item.productId,
+  //               price: item.price.toFixed(2),
+  //               currency: "USD",
+  //               quantity: item.quantity,
+  //             })),
+  //           },
+  //           amount: {
+  //             currency: "USD",
+  //             total: totalAmount.toFixed(2),
+  //           },
+  //           description: "description",
+  //         },
+  //       ],
+  //     };
+
+  //     paypal.payment.create(create_payment_json, async (error, paymentInfo) => {
+  //       if (error) {
+  //         console.log(error);
+  //         return false
+
+  //       } else {
+  //         const data = await this.databases.createDocument(
+  //           conf.appwriteDatabaseId,
+  //           conf.appwriteOrderCollectionId,
+  //           ID.unique(),
+  //           {
+  //             userId,
+  //             cartId,
+  //             cartItems,
+  //             addressInfo,
+  //             orderStatus,
+  //             paymentMethod,
+  //             paymentStatus,
+  //             totalAmount,
+  //             orderDate,
+  //             orderUpdateDate,
+  //             paymentId,
+  //             payerId,
+  //           }
+  //         );
+  //         const approvalURL = paymentInfo.links.find(
+  //           (link) => link.rel === "approval_url"
+  //         ).href;
+
+  //         return { orderId: data.$id, approvalURL: approvalURL }
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.log("Apwrite service :: createOrder :: error", error);
+  //   }
+  // }
 
 }
 

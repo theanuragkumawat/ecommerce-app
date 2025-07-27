@@ -15,7 +15,7 @@ function ShoppingProductCard({ product }) {
     const cartItems = useSelector(state => state.cart.cartItems)
     const wishlistItems = useSelector(state => state.wishlist.wishlistItems)
 
-    const [imageURL, setImageURL] = useState("image")
+    const [imageURL, setImageURL] = useState("i")
 
     async function getImage() {
         const url = await databaseService.getFilePreview(product.image)
