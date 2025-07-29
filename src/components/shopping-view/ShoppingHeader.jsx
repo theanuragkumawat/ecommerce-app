@@ -2,16 +2,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import { Store, User } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { useState } from 'react'
-import { Link, NavLink } from 'react-router'
+import { Link, NavLink,useNavigate } from 'react-router'
 import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router'
 import authService from '@/appwrite/auth'
 import { toast } from 'sonner'
 import { logout as storeLogout } from "../../store/auth-slice"
 import { Badge } from '../ui/badge'
 import { getCartCount } from '@/store/shop/cart-slice'
 import { Button } from '../ui/button'
-// import { useSelector } from 'react-redux'
 import { addProductsToCart } from '@/store/shop/cart-slice'
 function ShoppingHeader() {
 
@@ -34,26 +32,26 @@ function ShoppingHeader() {
     {
       name: "Men",
       path: '/listing',
-      id:"men"
+      id: "men"
     },
     {
       name: "Women",
       path: '/listing',
-      id:"women"
+      id: "women"
     },
     {
       name: "Kids",
       path: '/listing',
-      id:"kids"
+      id: "kids"
     },
     {
       name: "Footwear",
       path: '/listing',
-      id:"footwear"
+      id: "footwear"
     },
     {
       name: "Accessories",
-      id:"accessories",
+      id: "accessories",
       path: '/listing'
     },
     {
@@ -86,7 +84,7 @@ function ShoppingHeader() {
               to="/"
               className="flex justify-center items-center cursor-pointer w-auto h-8 dark:hidden text-lg font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500"
             >
-              <Store className='inline mr-2'/>Ecommerce
+              <Store className='inline mr-2' />Ecommerce
             </Link>
           </div>
           <ul className="hidden lg:flex items-center justify-start gap-6 md:gap-7 py-3 sm:justify-center">
@@ -97,7 +95,7 @@ function ShoppingHeader() {
                   <li key={item.name}>
                     <NavLink
                       to={`${item.id ? `${item.path}?category=${item.id}` : item.path}`}
-                      
+
                       className={
                         `hover:text-gray-950 hover:after:w-full py-2 relative font-medium text-sm dark:text-white after:content-[''] after:absolute after:left-0 after:bottom-0.5 after:h-[2px] after:bg-black    dark:after:bg-white after:transition-all after:duration-300 after:w-0 text-gray-700`
                       }
@@ -140,79 +138,76 @@ function ShoppingHeader() {
               <Badge variant="" className="absolute w-4 h-4 top-0.5 left-6">{cartCount > 0 ? cartCount : "0"}</Badge>
 
             </Link>
-{
-  isAuthenticated &&
+            {
+              isAuthenticated &&
 
-            <button
-              onClick={() => showAccountMenu ? setShowAccountMenu(false) : setShowAccountMenu(true)}
-              id="userDropdownButton1"
-              data-dropdown-toggle="userDropdown1"
-              type="button"
-              className="relative cursor-pointer inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white"
-            >
-            
-            
-                  <Avatar className="mr-1">
-                    <AvatarFallback className="flex items-center justify-center w-7 h-7 rounded-full bg-black text-white font-extrabold">
-
-                      {/* {userData?.name?.[0]?.toUpperCase() || "U"} */}
-                      {
-                        userData.name[0] || '!'
-                      }
-
-                    </AvatarFallback>
-                  </Avatar>
-          
-              <div
-                id="userDropdown1"
-                className={` ${showAccountMenu ? "opacity-100 scale-100" : "opacity-0 scale-95 h-0"} absolute transition-all duration-300 ease-in-out transform  top-10 z-10 w-56 divide-y divide-gray-100 overflow-hidden overflow-y-auto rounded-lg bg-white antialiased shadow dark:divide-gray-600 dark:bg-gray-700`}
+              <button
+                onClick={() => showAccountMenu ? setShowAccountMenu(false) : setShowAccountMenu(true)}
+                id="userDropdownButton1"
+                data-dropdown-toggle="userDropdown1"
+                type="button"
+                className=" relative cursor-pointer inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white"
               >
-                <ul className="p-2 text-start text-sm font-medium text-gray-900 dark:text-white">
-                  <li>
-                    <Link
-                      to="account"
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      My Account{" "}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="orders"
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      My Orders{" "}
-                    </Link>
-                  </li>
-                  
-                  
-                  <li>
-                    <Link
-                      to="wishlist"
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      My Wishlist{" "}
-                    </Link>
-                  </li>
-                
-                </ul>
+
+
+                <Avatar className="mr-1">
+                  <AvatarFallback className="flex items-center justify-center w-7 h-7 rounded-full bg-black text-white font-extrabold">
+
+                    {/* {userData?.name?.[0]?.toUpperCase() || "U"} */}
+                    {
+                      userData.name[0] || '!'
+                    }
+
+                  </AvatarFallback>
+                </Avatar>
+
                 <div
-                  onClick={handleLogout}
-                  className="p-2 text-sm font-medium text-gray-900 dark:text-white">
-                  <Link
-                    className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                  >
-                    Log Out{" "}
-                  </Link>
+                  id="userDropdown1"
+                  className={`z-20 ${showAccountMenu ? "z-[52] opacity-100 scale-100" : "opacity-0 scale-95 h-0"} absolute transition-all duration-300 ease-in-out transform  top-10  w-56 divide-y divide-gray-100 overflow-hidden overflow-y-auto rounded-lg bg-white antialiased shadow dark:divide-gray-600 dark:bg-gray-700`}
+                >
+                  <ul className="p-2 text-start text-sm font-medium text-gray-900 dark:text-white">
+                    <li>
+                      <Link
+                        to="account"
+                        title=""
+                        className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                      >
+                        My Account{" "}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="orders"
+                        title=""
+                        className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                      >
+                        My Orders{" "}
+                      </Link>
+                    </li>
+
+
+                    <li>
+                      <Link
+                        to="wishlist"
+                        title=""
+                        className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                      >
+                        My Wishlist{" "}
+                      </Link>
+                    </li>
+
+                  </ul>
+                  <div
+                    onClick={handleLogout}
+                    className="p-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <Link
+                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                    >
+                      Log Out{" "}
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </button>
+              </button>
             }
             {
               !isAuthenticated &&
@@ -252,62 +247,26 @@ function ShoppingHeader() {
 
         <div
           id="ecommerce-navbar-menu-1"
-          className={`
-    transition-all duration-300 ease-in-out transform block  absolute
-    ${showSmallScreenMenu ? "opacity-100 scale-100  max-h-screen" : "opacity-0 scale-95  max-h-0 overflow-hidden"}
-    bg-gray-50 dark:bg-gray-700 dark:border-gray-600 border border-gray-200 rounded-lg py-3 w-dvw px-4 left-0
-  `}
+          className={`z-50  transition-all duration-300 ease-in-out transform block  absolute ${showSmallScreenMenu ? "opacity-100 scale-100  max-h-screen" : "opacity-0 scale-95  max-h-0 overflow-hidden"} bg-gray-50 dark:bg-gray-700 dark:border-gray-600 border border-gray-200 rounded-lg py-3 w-dvw px-4 left-0`}
         >
-
           <ul className="text-gray-900 dark:text-white text-sm font-medium space-y-3">
-            <li>
-              <Link
-
-                className="hover:text-primary-700 dark:hover:text-primary-500"
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-
-                className="hover:text-primary-700 dark:hover:text-primary-500"
-              >
-                Best Sellers
-              </Link>
-            </li>
-            <li>
-              <Link
-
-                className="hover:text-primary-700 dark:hover:text-primary-500"
-              >
-                Gift Ideas
-              </Link>
-            </li>
-            <li>
-              <Link
-
-                className="hover:text-primary-700 dark:hover:text-primary-500"
-              >
-                Games
-              </Link>
-            </li>
-            <li>
-              <Link
-
-                className="hover:text-primary-700 dark:hover:text-primary-500"
-              >
-                Electronics
-              </Link>
-            </li>
-            <li>
-              <Link
-
-                className="hover:text-primary-700 dark:hover:text-primary-500"
-              >
-                Home &amp; Garden
-              </Link>
-            </li>
+            {
+              navMenu.map(item => {
+                return (
+                  <li key={item.name}>
+                    <Link
+                      to={`${item.id ? `${item.path}?category=${item.id}` : item.path}`}
+                      onClick={() => setShowSmallScreenMenu(false)}
+                      className={
+                        `hover:text-gray-950 hover:after:w-full py-2 relative font-medium text-sm dark:text-white after:content-[''] after:absolute after:left-0 after:bottom-0.5 after:h-[2px] after:bg-black    dark:after:bg-white after:transition-all after:duration-300 after:w-0 text-gray-700`
+                      }
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                )
+              })
+            }
           </ul>
         </div>
       </div>

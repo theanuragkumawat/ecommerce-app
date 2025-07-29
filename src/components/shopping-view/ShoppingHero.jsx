@@ -66,7 +66,7 @@ function ShoppingHero() {
                             <img
                                 src={item}
                                 key={index}
-                                className={`${index == currentSlide ? "opacity-100" : "opacity-0"} absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
+                                className={`${index == currentSlide ? "opacity-100" : "opacity-0"} z-[10] absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
                             />
                         ))
                     }
@@ -106,7 +106,7 @@ function ShoppingHero() {
                                 ))
                             }
                         </div>
-                        <h2 className="text-3xl font-bold text-center mb-8 mt-28">
+                        <h2 className="text-3xl font-bold text-center mb-8 mt-16">
                             Shop by brands
                         </h2>
                         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
@@ -123,7 +123,7 @@ function ShoppingHero() {
                                 ))
                             }
                         </div>
-                        <h2 className="text-3xl font-bold text-center mb-8 mt-28">
+                        <h2 className="text-3xl font-bold text-center mb-8 mt-16">
                             Featured products
                         </h2>
                         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>

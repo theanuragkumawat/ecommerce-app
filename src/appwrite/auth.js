@@ -27,17 +27,17 @@ class AuthService {
         }
     }
 
-    async login({email,password}){
+    async login({ email, password }) {
         try {
-            const user = await this.account.createEmailPasswordSession(email,password);
+            const user = await this.account.createEmailPasswordSession(email, password);
             return user
         } catch (error) {
             throw error
-            
+
         }
     }
 
-    async getCurrentUser(){
+    async getCurrentUser() {
         try {
             return await this.account.get()
         } catch (error) {
@@ -46,28 +46,42 @@ class AuthService {
         }
     }
 
-    async logout(){
+    async logout() {
         try {
             return await this.account.deleteSessions()
-        } catch (error) {   
+        } catch (error) {
             console.log("Logout error" + error);
-            
+
         }
     }
 
     // _____________VERIFY____________
-    async getVerification(){
+    async getVerification() {
         try {
             return await this.account.createVerification('http://localhost:5173/verify')
-        } catch (error) {   
+        } catch (error) {
             console.log("Verify error" + error);
         }
     }
 
-    async updateVerification(userId,secret){
+    async updateVerification(userId, secret) {
         try {
-            return await this.account.updateVerification(userId,secret);
-        } catch (error) {   
+            return await this.account.updateVerification(userId, secret);
+        } catch (error) {
+            throw error
+        }
+    }
+
+    // Change Password
+
+    async changePassword({newPassword,oldPassword}) {
+        try {
+            return await this.account.updatePassword(
+                newPassword, // password
+                oldPassword // oldPassword (optional)
+            );
+        } catch (error) {
+            console.log("Change password error: " + error);
             throw error
         }
     }

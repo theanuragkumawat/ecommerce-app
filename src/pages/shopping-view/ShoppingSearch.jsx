@@ -1,0 +1,83 @@
+import React, { useEffect, useState } from 'react'
+import databaseService from '@/appwrite/config'
+import { ShoppingProductCard } from '@/components'
+import { Input } from '@/components/ui/input'
+import { useSearchParams } from 'react-router'
+import { X } from 'lucide-react'
+function ShoppingSearch() {
+    const [searchResults, setSearchResults] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const searchQuery = new URLSearchParams(window.location.search).get('query')
+    const [keyword, setKeyword] = useState(searchQuery)
+
+    const [searchParams, setSearchParams] = useSearchParams()
+
+    async function fetchSearchResults() {
+        try {
+            if(!keyword || keyword.length < 3){
+                return
+            }
+            const data = await databaseService.searchProducts(keyword)
+            setSearchParams(new URLSearchParams(`?query=${keyword}`))
+            setSearchResults(data.documents)
+        } catch (error) {
+            console.error("Error fetching search results:", error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    useEffect(() => {
+
+        fetchSearchResults()
+    }, [keyword])
+
+
+
+    return (
+        <div className='container w-2/3 mx-auto justify-center items-center mt-2'>
+            <div className="flex justify-center mb-8">
+                <div className="w-full flex items-center relative"> {/* Added 'relative' for potential absolute positioning of icons */}
+                    <label htmlFor="productSearch" className="sr-only">Search Products</label> {/* Added a visually hidden label for accessibility */}
+                    <Input
+                        id="productSearch" // Linked label to input with an ID
+                        value={keyword}
+                        name="keyword"
+                        onChange={(event) => setKeyword(event.target.value)}
+                        className="py-6 pr-4" // Added right padding for a potential search icon
+                        placeholder="Search products, brands, or categories..." // More descriptive placeholder
+                        aria-label="Search products, brands, or categories" // ARIA label for improved accessibility
+                        type="search" // Semantic input type for search fields
+                        autoComplete="off" // Disable browser autocomplete if not desired
+                    />
+                    {keyword && ( // Conditionally render a clear button if there's text
+                        <button
+                            type="button"
+                            onClick={() => setKeyword('')}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 "
+                            aria-label="Clear search"
+                        >
+                            <X />
+
+                        </button>
+                    )}
+
+                </div>
+            </div>
+            {searchResults.length > 0 ? (
+                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+                    {
+
+                        searchResults?.map((product) => (
+                            <ShoppingProductCard key={product.$id} product={product} />
+                        ))
+                    }
+                </div>
+            ) : (
+                <h1 className='text-4xl font-bold'>No products found...</h1>
+            )}
+        </div>
+    )
+}
+
+export default ShoppingSearch

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router";
 import { Layout } from "./components";
-import { AdminDashboard, AdminFeatures, AdminOrders, AdminProducts, Login, Register, ShoppingAccount, ShoppingCart, ShoppingCheckout, ShoppingHome, ShoppingListing, ShoppingProductOverview, ShoppingWishlist,ShoppingOrdersAddress, UnauthPage } from "./pages";
+import { AdminDashboard, AdminFeatures, AdminOrders, AdminProducts, Login, Register, ShoppingAccount, ShoppingCart, ShoppingCheckout, ShoppingHome, ShoppingListing, ShoppingProductOverview, ShoppingWishlist,ShoppingOrdersAddress, UnauthPage, ShoppingSearch } from "./pages";
 import AdminLayout from "./components/admin-view/AdminLayout";
 import ShopingLayout from "./components/shopping-view/ShopingLayout";
 import NotFound from "./pages/NotFound";
@@ -12,6 +12,8 @@ import databaseService from "./appwrite/config";
 import { addProductsToCart } from "./store/shop/cart-slice";
 import { addProductsToWishlist } from "./store/shop/wishlist-slice";
 import Verify from "./pages/verify/Verify";
+import Cancel from "./pages/stripe/Cancel";
+import Success from "./pages/stripe/Success";
 
 function App() {
   const dispatch = useDispatch()
@@ -81,6 +83,8 @@ useEffect(() => {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/verify" element={<Verify />} />
+              <Route path="/success" element={<Success />} />
+              <Route path="/cancel" element={<Cancel />} />
 
             </Route>
 
@@ -99,6 +103,7 @@ useEffect(() => {
               <Route path="/orders" element={<ShoppingOrdersAddress />} />
               <Route path="/listing" element={<ShoppingListing />} />
               <Route path="/checkout" element={<ShoppingCheckout />} />
+              <Route path="/search" element={<ShoppingSearch />} />
               <Route path="/product/:productId" element={<ShoppingProductOverview />} />
             </Route>
 

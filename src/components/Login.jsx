@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -14,14 +14,14 @@ import { addProductsToCart } from "@/store/shop/cart-slice";
 function Login() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
+    const [showPassword, setShowPassword] = useState(false)
 
     const [error, setError] = useState('')
     const [userDetails, setUserDetails] = useState({
         email: "",
         password: "",
     });
-    // console.log(userDetails);
+
 
     async function handleLogin(e) {
         e.preventDefault();
@@ -33,24 +33,22 @@ function Login() {
                 const userData = await authService.getCurrentUser();
                 if (userData) {
                     dispatch(storeLogin(userData))
-
                     const cart = await databaseService.getCart(userData.$id)
-                    if(cart){
+                    if (cart) {
                         localStorage.removeItem('cart');
-                    } else{
+                    } else {
                         const tempCart = localStorage.getItem('cart')
-                        if(tempCart){
+                        if (tempCart) {
 
-                            const data = await databaseService.createCart(userData.$id,JSON.parse(tempCart))
-                            if(data){
+                            const data = await databaseService.createCart(userData.$id, JSON.parse(tempCart))
+                            if (data) {
                                 console.log(data);
-                                
                                 dispatch(addProductsToCart(JSON.parse(data.products)))
                                 localStorage.removeItem('cart');
                             }
                         }
                     }
-                    toast('Login successfull')
+                    toast.success('Login successfull')
                     navigate('/')
                 }
             }
@@ -59,18 +57,10 @@ function Login() {
         }
     }
 
-    // async function logout() {
-    //     const logoutDetails = await authService.logout()
-    //     if (logoutDetails) {
-    //         console.log(logoutDetails);
-
-    //     }
-    // }
-
     return (
         <>
             <form onSubmit={handleLogin}>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1">
                     <div className="grid w-full gap-1.5">
                         <Label className="mb-1"></Label>
                         <Input
@@ -98,8 +88,25 @@ function Login() {
                                 }))
                             }
                             placeholder="Enter your password"
-                            type="password"
+                            type={`${showPassword ? "text" : "password"}`}
                         />
+                        <div className="flex flex-row justify-between">
+
+                        <button
+                            type="button" // Important: set type to button to prevent form submission
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="ml-2 mt-1 pr-3 flex items-center text-sm leading-5 cursor-pointer font-medium  text-primary hover:underline"
+                        >
+                            {showPassword ? 'Hide password' : 'Show password'}
+                        </button>   
+                        <button
+                            type="button" // Important: set type to button to prevent form submission
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="ml-2 mt-1 pr-3 flex items-center text-sm leading-5 cursor-pointer font-medium  text-primary hover:underline"
+                        >
+                            Forget password?
+                        </button>   
+                        </div>
                         {
                             error && <p className="text-center text-red-500 text-sm mt-2">{error}</p>
                         }

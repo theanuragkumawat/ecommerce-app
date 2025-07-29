@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Filters, ProductDetailsDialog, ShoppingProductCard } from "@/components";
+import { Filters, ShoppingProductCard } from "@/components";
 import Sort from "@/components/shopping-view/Sort";
 import databaseService from "@/appwrite/config";
 import { useSelector, useDispatch } from "react-redux";
@@ -45,7 +45,6 @@ export default function ShoppingListing() {
 
   async function fetchFilterProducts() {
     if (category.length > 0 || brand.length > 0) {
-      
       const posts = await databaseService.getFilterProducts({ category, brand })
       if (posts) {
         let products = posts.documents;
@@ -78,14 +77,12 @@ export default function ShoppingListing() {
       navigate(`/listing`);
       setCurrentProducts(products)
     } else {
-
       databaseService.getAllProducts().then((posts) => {
         if (posts) {
           const products = posts.documents;
           setCurrentProducts(products)
         }
       });
-
       navigate(`/listing`);
     }
   }
@@ -97,7 +94,6 @@ export default function ShoppingListing() {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen p-4 gap-4">
-      <ProductDetailsDialog setOpen={"r"} />
       {/* Filters Sidebar */}
       <Filters
         category={category}

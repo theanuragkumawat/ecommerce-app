@@ -2,10 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import databaseService from '@/appwrite/config';
 import { Link } from 'react-router';
-import { useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { addProductsToCart } from '@/store/shop/cart-slice';
 import { addProductsToWishlist } from '@/store/shop/wishlist-slice';
 import { toast } from 'sonner';
+import { Star } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import RatingInput from '@/components/shopping-view/RatingInput';
+import { Button } from '@/components/ui/button';
 
 function ShoppingProductOverview() {
 
@@ -13,16 +18,72 @@ function ShoppingProductOverview() {
     const [image, setImage] = useState("i")
     const [product, setProduct] = useState(false);
     const dispatch = useDispatch()
-    const {userData,isAuthenticated} = useSelector(state => state.auth)
-    const {cartItems} = useSelector(state => state.cart)
-    const {wishlistItems} = useSelector(state => state.wishlist)
-    
+    const { userData, isAuthenticated } = useSelector(state => state.auth)
+    const { cartItems } = useSelector(state => state.cart)
+    const { wishlistItems } = useSelector(state => state.wishlist)
+    const [allProductsReview, setAllProductsReview] = useState([])
+    const [rating, setRating] = useState(0)
+
+
+
+    const initialReviewData = {
+        productId: "",
+        userId: "",
+        userName: "",
+        reviewTitle: "",
+        reviewMessage: "",
+        reviewValue: 0
+    }
+    const [reviewData, setReviewData] = useState(initialReviewData)
+    async function handleAddReview(e) {
+        e.preventDefault()
+        if (!isAuthenticated) {
+            toast.error("Please login to add your review")
+            return;
+        }
+        if (reviewData.reviewTitle == "" || reviewData.reviewMessage == "") {
+            toast.error("Please fill all fields")
+            return
+        }
+        if (rating == 0) {
+            toast.error("Please select a rating")
+            return
+        }
+        try {
+            const exist = await databaseService.checkUserReview({ userId: userData.$id, productId: productId })
+            if (exist.documents.length > 0) {
+                toast.warning("You have already added a review")
+                console.log(exist);
+                return
+            }
+
+            const data = await databaseService.addProductReview(reviewData)
+            if (data) {
+                setReviewData(initialReviewData)
+                toast.success("Your review added successfully")
+                setRating(0)
+                getProductDetails()
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    console.log(product);
+
+
     async function getProductDetails() {
         const data = await databaseService.getProduct(productId)
         if (data) {
+            setReviewData((prev) => ({ ...prev, productId: productId, userId: userData.$id, userName: userData.name }))
             setProduct(data)
             const url = await databaseService.getFilePreview(data.image)
             setImage(url)
+        }
+
+        const productReviews = await databaseService.getProductReviews(productId)
+        if (productReviews) {
+            setAllProductsReview(productReviews.documents)
         }
     }
     useEffect(() => {
@@ -45,7 +106,7 @@ function ShoppingProductOverview() {
                             dispatch(addProductsToCart(JSON.parse(data.products)))
                         }
                     } else {
-                        temp.push({ productId: product.$id, quantity: 1,price:product.price });
+                        temp.push({ productId: product.$id, quantity: 1, price: product.price });
                         const data = await databaseService.updateCart(userData.$id, temp);
                         if (data) {
                             dispatch(addProductsToCart(JSON.parse(data.products)))
@@ -54,7 +115,7 @@ function ShoppingProductOverview() {
                     }
                 } else {
                     let productArr = [
-                        { productId: product.$id, quantity: 1,price:product.price }
+                        { productId: product.$id, quantity: 1, price: product.price }
                     ]
                     const response = await databaseService.createCart(userData.$id, productArr);
                     if (response) {
@@ -71,12 +132,12 @@ function ShoppingProductOverview() {
                     const existing = temp.find((i) => i.productId === product.$id)
                     if (existing) {
                         console.log(existing);
-                        
+
                         temp = temp.map(item => item.productId == product.$id ? { ...item, quantity: item.quantity + 1 } : item)
                         localStorage.setItem("cart", JSON.stringify(temp))
                         dispatch(addProductsToCart(temp))
-                    } else{
-                        temp.push({ productId: product.$id, quantity: 1,price: product.price});
+                    } else {
+                        temp.push({ productId: product.$id, quantity: 1, price: product.price });
                         localStorage.setItem("cart", JSON.stringify(temp))
                         dispatch(addProductsToCart(temp))
                     }
@@ -84,7 +145,7 @@ function ShoppingProductOverview() {
 
                 } else {
                     let productArr = [
-                        { productId: product.$id, quantity: 1,price:product.price }
+                        { productId: product.$id, quantity: 1, price: product.price }
                     ]
                     localStorage.setItem("cart", JSON.stringify(productArr))
                     dispatch(addProductsToCart(productArr))
@@ -149,7 +210,7 @@ function ShoppingProductOverview() {
                 <div className="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
                     <div className="shrink-0 max-w-md lg:max-w-lg mx-auto">
                         <img
-                            className="w-3/4 mx-auto border-2 dark:hidden"
+                            className="w-3/4 mx-auto rounded-3xl"
                             src={image}
                             alt=""
                         />
@@ -160,7 +221,7 @@ function ShoppingProductOverview() {
                             {product.title}
                         </h1>
                         <div className="mt-4 sm:items-center sm:gap-1 sm:flex">
-                            <p className={`${product.salePrice > 0 ? "text-2xl line-through text-gray-500 font-semibold" : "text-2xl sm:text-3xl font-extrabold text-gray-900"}   dark:text-white`}>
+                            <p className={`${product.salePrice > 0 ? "text-2xl line-through text-gray-500 font-semibold" : "text-2xl sm:text-3xl font-extrabold text-gray-900"}  dark:text-white`}>
                                 ${product.price}
                             </p>
                             {
@@ -169,77 +230,47 @@ function ShoppingProductOverview() {
                                 </p> : null
                             }
                             <div className="flex items-center gap-2 mt-2 sm:mt-0">
-                                <div className="mx-2 flex items-center gap-1">
-                                    <svg
-                                        className="w-4 h-4 text-yellow-300"
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width={24}
-                                        height={24}
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-                                    </svg>
-                                    <svg
-                                        className="w-4 h-4 text-yellow-300"
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width={24}
-                                        height={24}
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-                                    </svg>
-                                    <svg
-                                        className="w-4 h-4 text-yellow-300"
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width={24}
-                                        height={24}
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-                                    </svg>
-                                    <svg
-                                        className="w-4 h-4 text-yellow-300"
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width={24}
-                                        height={24}
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-                                    </svg>
-                                    <svg
-                                        className="w-4 h-4 text-yellow-300"
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width={24}
-                                        height={24}
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-                                    </svg>
+                                <div className="ml-2 flex items-center gap-1">
+                                    {
+                                        (product && product.averageReview) ?
+                                            [1, 2, 3, 4, 5].map((currentRating) => {
+                                                return (
+                                                    <span key={currentRating} className={`${currentRating <= product.averageReview ? "text-amber-300" : "text-gray-300"}`} >
+                                                        <Star size={16} fill='currentColor' />
+                                                    </span>
+                                                )
+                                            }) : <>
+
+                                                <span className={`text-gray-300`} >
+                                                    <Star size={16} fill='currentColor' />
+                                                </span>
+                                                <span className={`text-gray-300`} >
+                                                    <Star size={16} fill='currentColor' />
+                                                </span>
+                                                <span className={`text-gray-300`} >
+                                                    <Star size={16} fill='currentColor' />
+                                                </span>
+                                                <span className={`text-gray-300`} >
+                                                    <Star size={16} fill='currentColor' />
+                                                </span>
+                                                <span className={`text-gray-300`} >
+                                                    <Star size={16} fill='currentColor' />
+                                                </span>
+                                            </>
+                                    }
                                 </div>
-                                <p className="text-sm font-medium leading-none text-gray-500 dark:text-gray-400">
-                                    (5.0)
+                                 <p className="-ml-1 text-sm font-semibold text-gray-900 dark:text-white">
+                            {product.averageReview}
+                        </p>
+                                <p
+                                    className="text-sm font-medium leading-none text-gray-900 underline hover:no-underline dark:text-white">
+                                    {product.totalReview ? `(${product.totalReview + " Reviews"})` : "No Reviews"}
                                 </p>
-                                <a
-                                    href="#"
-                                    className="text-sm font-medium leading-none text-gray-900 underline hover:no-underline dark:text-white"
-                                >
-                                    345 Reviews
-                                </a>
                             </div>
                         </div>
                         <div className="mt-6 sm:gap-3 sm:items-center sm:flex sm:mt-8">
                             <Link
-                            onClick={addToWishlistHandler}
+                                onClick={addToWishlistHandler}
                                 href="#"
                                 title=""
                                 className="transition duration-150 flex items-center justify-center py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-700 hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
@@ -265,7 +296,7 @@ function ShoppingProductOverview() {
                                 Add to favorites
                             </Link>
                             <Link
-                            onClick={addToCartHandler}
+                                onClick={addToCartHandler}
                                 href="#"
                                 title=""
                                 className="transition duration-150 flex items-center justify-center py-2.5 px-5 text-sm font-medium bg-gray-900 text-white hover:bg-primary-800 focus:outline-none rounded-lg border border-gray-700 hover:bg-white hover:text-gray-900 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
@@ -297,6 +328,81 @@ function ShoppingProductOverview() {
                             {product.description}
                         </p>
 
+                        {/* Reviews Section */}
+                        <div className="mt-8">
+                            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Customer Reviews</h2>
+                            <div className="space-y-3">
+                                {
+                                    allProductsReview.length > 0 &&
+                                    allProductsReview?.map((item, index) => {
+
+                                        const date = new Date(item.$createdAt).toLocaleDateString('en-in', { year: 'numeric', month: 'long', day: 'numeric' })
+                                        return (
+                                            <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-all duration-300">
+                                                <div className="flex items-center mb-2">
+                                                    <div className="flex items-center gap-1">
+                                                        {
+                                                            [1, 2, 3, 4, 5].map((currentRating) => (
+                                                                <span key={currentRating} className={`${currentRating <= item.reviewValue ? "text-amber-300" : "text-gray-300"}`} >
+                                                                    <Star size={16} fill='currentColor' />
+                                                                </span>
+                                                            ))
+                                                        }
+                                                    </div>
+                                                    <p className="ms-2 text-sm font-medium text-gray-900 dark:text-white">{item.userName}</p>
+                                                    <p className="ms-auto text-sm text-gray-500 dark:text-gray-400">{date}</p>
+
+                                                </div>
+                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{item.reviewTitle}</h3>
+                                                <p className="text-gray-500 dark:text-gray-400">
+                                                    {item.reviewMessage}
+                                                </p>
+                                            </div>
+                                        )
+                                    }
+                                    )
+                                }
+                                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Write a Review</h3>
+                                    <div>
+                                        <div className="mb-4">
+                                            <label htmlFor="review-title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Review Title</label>
+                                            <Input
+                                                onChange={(e) => setReviewData((prev) => ({ ...prev, [e.target.name]: e.target.value }))}
+                                                value={reviewData.reviewTitle}
+                                                name="reviewTitle"
+                                                id="review-title"
+                                                placeholder="Summarize your experience"
+                                            />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label htmlFor="review-text" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Your Review</label>
+                                            <Textarea
+                                                value={reviewData.reviewMessage}
+                                                onChange={(e) => setReviewData((prev) => ({ ...prev, [e.target.name]: e.target.value }))}
+                                                id="review-text"
+                                                placeholder="Share your thoughts on the product..."
+                                                name="reviewMessage"
+                                            >
+
+                                            </Textarea>
+                                        </div>
+                                        <div className="mb-3">
+                                            <RatingInput rating={rating} setRating={setRating} setReviewData={setReviewData} />
+                                        </div>
+
+
+                                        <Button
+                                            onClick={handleAddReview}
+                                            className="transition duration-150 py-2.5 px-5 text-sm font-medium bg-gray-900 text-white hover:bg-primary-800 focus:outline-none rounded-lg border border-gray-700 hover:bg-white hover:text-gray-900 focus:z-10 focus:ring-4 focus:ring-gray-100"
+                                        >
+                                            Submit Review
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>

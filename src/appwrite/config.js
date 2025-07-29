@@ -1,4 +1,4 @@
-import { Client, Databases, Storage, ID, Query } from "appwrite";
+import { Client, Databases, Storage, ID, Query, Functions } from "appwrite";
 import conf from "@/conf/conf";
 // import paypal from "../paypal/paypal.js" 
 
@@ -6,7 +6,7 @@ export class DatabaseService {
   client = new Client();
   databases;
   bucket;
-
+  // functions;
   constructor() {
     this.client
       .setEndpoint(conf.appwriteUrl) // Your API Endpoint
@@ -14,6 +14,7 @@ export class DatabaseService {
 
     this.databases = new Databases(this.client);
     this.bucket = new Storage(this.client);
+    // this.functions = new Functions(this.client);
   }
 
   async creatProduct({
@@ -383,7 +384,7 @@ export class DatabaseService {
     }
   }
 
-  //Order
+  //------------------Order service--------
   // async createOrder(
   //   {
   //     userId,
@@ -466,6 +467,122 @@ export class DatabaseService {
   //     console.log("Apwrite service :: createOrder :: error", error);
   //   }
   // }
+
+
+  // -----------------product Search Service-----------------
+
+  async searchProducts(searchQuery) {
+    try {
+
+      const data = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionId,
+        [Query.or([
+          Query.search("title", searchQuery),
+          Query.search("category", searchQuery),
+          Query.search("brand", searchQuery),
+          Query.search("description", searchQuery),
+        ])]
+      );
+
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: search :: error", error);
+    }
+  }
+
+  async addProductReview({ productId, userId, userName, reviewTitle, reviewMessage, reviewValue }) {
+    try {
+       console.log("Updating productId:", productId,userId, userName, reviewTitle, reviewMessage, reviewValue);
+      const data = await this.databases.createDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteReviewCollectionId,
+        ID.unique(),
+        {
+          productId,
+          userId,
+          userName,
+          reviewTitle,
+          reviewMessage,
+          reviewValue: parseInt(reviewValue)
+        }
+      );
+
+      const reviews = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteReviewCollectionId,
+        [Query.equal("productId", productId)]
+      )
+
+      const totalReviewsLength = reviews.documents.length
+      const averageReview = reviews.documents.reduce((acc, review) => acc + review.reviewValue, 0) / totalReviewsLength;
+
+     
+
+      const response = await this.databases.updateDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionId,
+        productId,
+        {
+          averageReview: parseInt(averageReview.toFixed(1)),
+          totalReview: parseInt(totalReviewsLength)
+        }
+      );
+      console.log(response);
+      
+
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: addReview :: error", error);
+    }
+  }
+
+  async checkUserReview({productId, userId}) {
+    try {
+      const data = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteReviewCollectionId,
+        [
+          Query.and([
+            Query.equal("productId", productId),
+            Query.equal("userId", userId)
+          ])
+        ]
+      );
+
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: checkUserReview :: error", error);
+    }
+  }
+
+  async getProductReviews(productId){
+    try {
+      const data = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteReviewCollectionId,
+         [Query.equal("productId", productId)]
+      );
+
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: getProductReviews :: error", error);
+    }
+  }
+
+  async getUserReviews(userId){
+    try {
+      const data = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteReviewCollectionId,
+         [Query.equal("userId", userId)]
+      );
+
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: getUserReviews :: error", error);
+    }
+  }
 
 }
 

@@ -9,10 +9,11 @@ import { useDispatch } from "react-redux";
 import databaseService from "@/appwrite/config";
 import { addProductsToCart } from "@/store/shop/cart-slice";
 
-function Register({setEmail,setVerifying}) {
-const dispatch = useDispatch()
+function Register({ setEmail, setVerifying }) {
+    const dispatch = useDispatch()
     const navigate = useNavigate()
 
+    const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState('')
     const [userDetails, setUserDetails] = useState({
         name: "",
@@ -30,17 +31,17 @@ const dispatch = useDispatch()
                 toast('Registration successful')
                 setEmail(userDetails.email)
                 const session = await authService.login(userDetails)
-                if(session){
+                if (session) {
                     const tempCart = localStorage.getItem('cart')
-                        if(tempCart){
-                            const data = await databaseService.createCart(userData.$id,JSON.parse(tempCart))
-                            if(data){
-                                dispatch(addProductsToCart(JSON.parse(data.products)))
-                                localStorage.removeItem('cart');
-                            }
+                    if (tempCart) {
+                        const data = await databaseService.createCart(userData.$id, JSON.parse(tempCart))
+                        if (data) {
+                            dispatch(addProductsToCart(JSON.parse(data.products)))
+                            localStorage.removeItem('cart');
                         }
+                    }
                     const verifyData = await authService.getVerification()
-                    if(verifyData){
+                    if (verifyData) {
                         setVerifying(true)
                     }
                 }
@@ -52,7 +53,7 @@ const dispatch = useDispatch()
     }
 
     console.log(userDetails);
-    
+
 
     return (
         <form onSubmit={create}>
@@ -79,9 +80,16 @@ const dispatch = useDispatch()
                         placeholder="Enter your password"
                         value={userDetails.password}
                         onChange={(e) => setUserDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }))}
-                        type="password"
+                        type={`${showPassword ? "text" : "password"}`}
                         name="password"
                     />
+                    <button
+                        type="button" // Important: set type to button to prevent form submission
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="ml-2 mt-1 pr-3 flex items-center text-sm leading-5 cursor-pointer font-medium text-primary hover:underline"
+                    >
+                        {showPassword ? 'Hide password' : 'Show password'}
+                    </button>
                     {
                         error && <p className="text-center text-red-500 text-sm mt-2">{error}</p>
                     }

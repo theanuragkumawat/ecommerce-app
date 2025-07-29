@@ -3,9 +3,12 @@ import img from "../../assets/account.jpg"
 import { Address, CartProductCard } from '@/components'
 import { useSelector } from 'react-redux'
 import { Button } from '@/components/ui/button'
-import { loadStripe } from '@stripe/stripe-js'
+
+import { useNavigate } from 'react-router'
+
 
 function ShoppingCheckout() {
+  const navigate = useNavigate()
 
   const { cartItems } = useSelector(state => state.cart)
   const { userData } = useSelector(state => state.auth)
@@ -20,34 +23,10 @@ function ShoppingCheckout() {
       )
       : 0;
 
-  const handleCheckout = async () => {
-    const cartItems = [
-      { title: "Book", price: 10, quantity: 2 },
-      { title: "Headphones", price: 25, quantity: 1 },
-    ];
-    const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const userId = userData.$id; // Replace with real Appwrite user ID if needed
+  async function createCheckout() {
 
-    const res = await fetch("https://cloud.appwrite.io/v1/functions/68865f84000611f68271/executions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Appwrite-Project": "67b8188800367c64a091",
-        "X-Appwrite-Key": "standard_bbf66e755b3fa9b2d3b57bf66634473b7b2dbc5f9870c9d5884d650a14c9dff0ba82a86f51d04bceed9ed3b2608b1c2eb3cc874596bebcdc98485b3cc1b2358c5115877f367f06caf5c1405376efcdbacce6151e0c359f22ccdcf7af3bde44f8118728cf02689a36b8ade668795bfca654e2c2f8e559823e4d6046e7d3c52df7", // You can also use Appwrite session token if logged-in
-      },
-      body: JSON.stringify({ cartItems, totalAmount, userId }),
-    });
-
-    const data = await res.json();
-    if (data?.response) {
-      const { url } = JSON.parse(data.response);
-      if (url) window.location.href = url;
-    } else {
-      console.error("Stripe checkout failed", data);
-    }
 
   }
-  console.log(cartItems);
 
 
   return (
@@ -80,7 +59,7 @@ function ShoppingCheckout() {
           <div className='w-full px-4'>
 
             <Button
-              onClick={makePayment}
+              onClick={createCheckout}
               className={'w-full'}
             >
               Checkout
