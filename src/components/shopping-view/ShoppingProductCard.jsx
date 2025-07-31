@@ -7,16 +7,17 @@ import { addProductsToCart } from '@/store/shop/cart-slice';
 import { toast } from 'sonner';
 import { addProductsToWishlist } from '@/store/shop/wishlist-slice';
 
-
 function ShoppingProductCard({ product }) {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { userData, isAuthenticated } = useSelector(state => state.auth)
     const cartItems = useSelector(state => state.cart.cartItems)
-    const wishlistItems = useSelector(state => state.wishlist.wishlistItems)
+    const {wishlistItems} = useSelector(state => state.wishlist)
+    const {currency} = useSelector(state => state.shopProducts)
+    const [isWishlisted,setIsWishlisted] = useState(false)
+console.log(currency);
 
     const [imageURL, setImageURL] = useState("i")
-
     async function getImage() {
         const url = await databaseService.getFilePreview(product.image)
         setImageURL(url);
@@ -146,6 +147,10 @@ function ShoppingProductCard({ product }) {
         }
     }
 
+    useEffect(() => {
+         setIsWishlisted(wishlistItems?.some(item => item == product.$id))
+    },[wishlistItems])
+
     return (
         <>
             <div
@@ -166,7 +171,7 @@ function ShoppingProductCard({ product }) {
                         onClick={addToWishlistHandler}
                         type="button"
                         data-tooltip-target="tooltip-add-to-favorites"
-                        className="absolute top-3 right-3 rounded-full p-2 text-gray-300 bg-white/70 backdrop-blur-sm hover:bg-gray-100 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        className={`${isWishlisted ? "text-red-500" : " text-gray-300"} absolute top-3 right-3 rounded-full p-2 bg-white/70 backdrop-blur-sm hover:bg-gray-100 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500`}
                         aria-label="Add to Favorites"
                     >
                         <Heart color="currentColor" fill="currentColor" />
@@ -217,7 +222,7 @@ function ShoppingProductCard({ product }) {
                             </div>
                         </div>
                         <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                            {product.averageReview}
+                            {product?.averageReview?.toFixed(1)}
                         </p>
                         <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                             {product.totalReview ? `(${product.totalReview + " Reviews"})` : ""}
@@ -232,11 +237,11 @@ function ShoppingProductCard({ product }) {
                                 : 'text-2xl text-gray-900 font-extrabold'
                                 } leading-tight dark:text-white`}
                         >
-                            ${product.price}
+                            {currency}{product.price}
                         </p>
                         {product.salePrice > 0 && (
                             <p className="text-2xl text-neutral-900 font-extrabold leading-tight dark:text-neutral-900">
-                                ${product.salePrice}
+                                {currency}{product.salePrice}
                             </p>
                         )}
                     </div>

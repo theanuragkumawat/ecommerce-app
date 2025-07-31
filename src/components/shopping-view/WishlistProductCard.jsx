@@ -1,8 +1,10 @@
 import databaseService from '@/appwrite/config';
 import { addProductsToCart } from '@/store/shop/cart-slice';
 import { addProductsToWishlist } from '@/store/shop/wishlist-slice';
+import { Star } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
 
 function WishlistProductCard({ productId }) {
@@ -13,6 +15,7 @@ function WishlistProductCard({ productId }) {
     const wishlistItems = useSelector(state => state.wishlist.wishlistItems)
     const { cartItems } = useSelector(state => state.cart)
     const userData = useSelector(state => state.auth.userData)
+    const {currency} = useSelector(state => state.shopProducts)
     async function getProductDetails() {
         try {
             const data = await databaseService.getProduct(productId);
@@ -82,43 +85,58 @@ function WishlistProductCard({ productId }) {
                 <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
 
                     {/* IMAGE */}
-                    <a href="#" className="shrink-0 md:order-1">
+                    <Link className="shrink-0 md:order-1">
                         <img
                             className="h-20 dark:hidden"
                             src={image}
-                            alt="Wishlist product image"
                         />
-                    </a>
+                    </Link>
 
                     {/* RIGHT SIDE CONTENT */}
                     <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
 
                         {/* Title */}
-                        <a
-                            href="#"
+                        <Link
+                        to={`/product/${productId}`}
+                          
                             className="text-base font-medium text-gray-900 hover:underline dark:text-white"
                         >
                             {productDetails.title}
-                        </a>
+                        </Link>
 
                         {/* Rating Stars */}
                         <div className="flex items-center gap-2 mt-1.5">
-                            <div className="flex items-center">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                    <svg
-                                        key={star}
-                                        className={`h-4 w-4 text-yellow-400`}
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path d="M13.8 4.2a2 2 0 0 0-3.6 0L8.4 8.4l-4.6.3a2 2 0 0 0-1.1 3.5l3.5 3-1 4.4c-.5 1.7 1.4 3 2.9 2.1l3.9-2.3 3.9 2.3c1.5 1 3.4-.4 3-2.1l-1-4.4 3.4-3a2 2 0 0 0-1.1-3.5l-4.6-.3-1.8-4.2Z" />
-                                    </svg>
-                                ))}
+                            <div className="flex items-center gap-0.5">
+                                 {
+                                    (productDetails && productDetails.averageReview) ?
+                                        [1, 2, 3, 4, 5].map((currentRating) => {
+                                            return (
+                                                <span key={currentRating} className={`${currentRating <= productDetails.averageReview ? "text-amber-300" : "text-gray-300"}`} >
+                                                    <Star size={16} fill='currentColor' />
+                                                </span>
+                                            )
+                                        }) : <>
+
+                                            <span className={`text-gray-300`} >
+                                                <Star size={16} fill='currentColor' />
+                                            </span>
+                                            <span className={`text-gray-300`} >
+                                                <Star size={16} fill='currentColor' />
+                                            </span>
+                                            <span className={`text-gray-300`} >
+                                                <Star size={16} fill='currentColor' />
+                                            </span>
+                                            <span className={`text-gray-300`} >
+                                                <Star size={16} fill='currentColor' />
+                                            </span>
+                                            <span className={`text-gray-300`} >
+                                                <Star size={16} fill='currentColor' />
+                                            </span>
+                                        </>
+                                }
                             </div>
                             <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                4.5
+                                {productDetails?.averageReview ? productDetails.averageReview.toFixed(1) : "No Reviews"}
                             </p>
                         </div>
 
@@ -183,7 +201,7 @@ function WishlistProductCard({ productId }) {
                     {/* PRICE */}
                     <div className="text-end md:order-4 md:w-32">
                         <p className="text-base font-bold text-gray-900 dark:text-white">
-                            ${productDetails.salePrice > 0 ? productDetails.salePrice : productDetails.price}
+                            {currency}{productDetails.salePrice > 0 ? productDetails.salePrice : productDetails.price}
                         </p>
                     </div>
                 </div>

@@ -74,7 +74,7 @@ class AuthService {
 
     // Change Password
 
-    async changePassword({newPassword,oldPassword}) {
+    async changePassword({ newPassword, oldPassword }) {
         try {
             return await this.account.updatePassword(
                 newPassword, // password
@@ -82,6 +82,34 @@ class AuthService {
             );
         } catch (error) {
             console.log("Change password error: " + error);
+            throw error
+        }
+    }
+
+    // Recover------
+
+    async createPasswordRecover({ email }) {
+        try {
+            console.log(email);
+            
+            return await this.account.createRecovery(
+                email,
+                'http://localhost:5173/recover'
+            );
+        } catch (error) {
+            console.log("createPasswordRecover: " + error);
+            throw error
+        }
+    }
+    async updatePasswordRecover({ password }, userId, secret) {
+        try {
+            return await this.account.updateRecovery(
+                userId,
+                secret,
+                password
+            );
+        } catch (error) {
+            console.log("updatePasswordRecover error: " + error);
             throw error
         }
     }

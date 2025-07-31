@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addProductsToCart } from '@/store/shop/cart-slice';
 import { addProductsToWishlist } from '@/store/shop/wishlist-slice';
 import { toast } from 'sonner';
-import { Star } from 'lucide-react';
+import { Heart, Star } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import RatingInput from '@/components/shopping-view/RatingInput';
@@ -21,11 +21,10 @@ function ShoppingProductOverview() {
     const { userData, isAuthenticated } = useSelector(state => state.auth)
     const { cartItems } = useSelector(state => state.cart)
     const { wishlistItems } = useSelector(state => state.wishlist)
+    const { currency } = useSelector(state => state.shopProducts)
     const [allProductsReview, setAllProductsReview] = useState([])
     const [rating, setRating] = useState(0)
-
-
-
+    const [isWishlisted, setIsWishlisted] = useState(false)
     const initialReviewData = {
         productId: "",
         userId: "",
@@ -34,6 +33,12 @@ function ShoppingProductOverview() {
         reviewMessage: "",
         reviewValue: 0
     }
+
+    useEffect(() => {
+        setIsWishlisted(wishlistItems?.some(item => item == product.$id))
+    }, [wishlistItems, product])
+
+    const [reviewsToShow, setReviewsToShow] = useState(2)
     const [reviewData, setReviewData] = useState(initialReviewData)
     async function handleAddReview(e) {
         e.preventDefault()
@@ -53,7 +58,7 @@ function ShoppingProductOverview() {
             const exist = await databaseService.checkUserReview({ userId: userData.$id, productId: productId })
             if (exist.documents.length > 0) {
                 toast.warning("You have already added a review")
-                console.log(exist);
+                // console.log(exist);
                 return
             }
 
@@ -69,7 +74,7 @@ function ShoppingProductOverview() {
         }
     }
 
-    console.log(product);
+    // console.log(product);
 
 
     async function getProductDetails() {
@@ -131,7 +136,7 @@ function ShoppingProductOverview() {
                     let temp = cartItems.slice()
                     const existing = temp.find((i) => i.productId === product.$id)
                     if (existing) {
-                        console.log(existing);
+                        // console.log(existing);
 
                         temp = temp.map(item => item.productId == product.$id ? { ...item, quantity: item.quantity + 1 } : item)
                         localStorage.setItem("cart", JSON.stringify(temp))
@@ -156,6 +161,7 @@ function ShoppingProductOverview() {
         }
     }
 
+
     async function addToWishlistHandler(e) {
         e.stopPropagation()
         if (!isAuthenticated) {
@@ -170,7 +176,7 @@ function ShoppingProductOverview() {
                     if (temp.length == 0) {
                         const response = await databaseService.deleteWishlist(userData.$id);
                         dispatch(addProductsToWishlist([]))
-                        console.log(response, "wishlist deleted");
+                        // console.log(response, "wishlist deleted");
 
                     } else {
 
@@ -212,7 +218,6 @@ function ShoppingProductOverview() {
                         <img
                             className="w-3/4 mx-auto rounded-3xl"
                             src={image}
-                            alt=""
                         />
 
                     </div>
@@ -222,11 +227,11 @@ function ShoppingProductOverview() {
                         </h1>
                         <div className="mt-4 sm:items-center sm:gap-1 sm:flex">
                             <p className={`${product.salePrice > 0 ? "text-2xl line-through text-gray-500 font-semibold" : "text-2xl sm:text-3xl font-extrabold text-gray-900"}  dark:text-white`}>
-                                ${product.price}
+                                {currency}{product.price}
                             </p>
                             {
                                 product.salePrice > 0 ? <p className={`text-3xl text-gray-900 font-extrabold leading-tight  dark:text-white`}>
-                                    ${product.salePrice}
+                                    {currency}{product.salePrice}
                                 </p> : null
                             }
                             <div className="flex items-center gap-2 mt-2 sm:mt-0">
@@ -259,9 +264,9 @@ function ShoppingProductOverview() {
                                             </>
                                     }
                                 </div>
-                                 <p className="-ml-1 text-sm font-semibold text-gray-900 dark:text-white">
-                            {product.averageReview}
-                        </p>
+                                <p className="-ml-1 text-sm font-semibold text-gray-900 dark:text-white">
+                                    {product?.averageReview?.toFixed(1)}
+                                </p>
                                 <p
                                     className="text-sm font-medium leading-none text-gray-900 underline hover:no-underline dark:text-white">
                                     {product.totalReview ? `(${product.totalReview + " Reviews"})` : "No Reviews"}
@@ -271,28 +276,12 @@ function ShoppingProductOverview() {
                         <div className="mt-6 sm:gap-3 sm:items-center sm:flex sm:mt-8">
                             <Link
                                 onClick={addToWishlistHandler}
-                                href="#"
                                 title=""
-                                className="transition duration-150 flex items-center justify-center py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-700 hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                                className={` transition  duration-150 flex items-center justify-center py-2.5 px-5 text-sm font-medium focus:outline-none bg-white rounded-lg border border-gray-700 hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100`}
                                 role="button"
                             >
-                                <svg
-                                    className="w-5 h-5 -ms-2 me-2"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width={24}
-                                    height={24}
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
-                                    />
-                                </svg>
+                                <Heart fill={`${isWishlisted ? "#f02730" : "white"}`} className={`${isWishlisted ? "text-red-500" : ""} w-5 h-5 -ms-2 me-2`} />
+                                {/* <Heart fill={`${isWishlisted ? "red" : ""} `} color={`${isWishlisted ? "red" : ""} `}  className={` w-5 h-5 -ms-2 me-2`}/> */}
                                 Add to favorites
                             </Link>
                             <Link
@@ -334,11 +323,11 @@ function ShoppingProductOverview() {
                             <div className="space-y-3">
                                 {
                                     allProductsReview.length > 0 &&
-                                    allProductsReview?.map((item, index) => {
+                                    allProductsReview?.slice(0, reviewsToShow).map((item, index) => {
 
                                         const date = new Date(item.$createdAt).toLocaleDateString('en-in', { year: 'numeric', month: 'long', day: 'numeric' })
                                         return (
-                                            <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-all duration-300">
+                                            <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 ">
                                                 <div className="flex items-center mb-2">
                                                     <div className="flex items-center gap-1">
                                                         {
@@ -362,6 +351,16 @@ function ShoppingProductOverview() {
                                     }
                                     )
                                 }
+                                {allProductsReview.length > 0 && allProductsReview.length > reviewsToShow && (
+                                    <div className="flex justify-center">
+                                        <Button
+                                            onClick={() => setReviewsToShow(allProductsReview?.length)}
+                                            className="-mt-2 px-2"
+                                        >
+                                            Show more reviews
+                                        </Button>
+                                    </div>
+                                )}
                                 <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Write a Review</h3>
                                     <div>

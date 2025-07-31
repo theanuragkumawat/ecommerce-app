@@ -33,7 +33,7 @@ const ShoppingAccount = () => {
   ];
 
   const [openDialog, setOpenDialog] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('Something went wrong')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const OverviewCard = ({ icon: Icon, title, subtitle }) => (
     <Card className="flex flex-col items-center p-4  rounded-lg  w-full  min-w-[120px]">

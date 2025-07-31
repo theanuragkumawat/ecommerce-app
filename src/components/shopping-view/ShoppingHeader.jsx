@@ -11,6 +11,7 @@ import { Badge } from '../ui/badge'
 import { getCartCount } from '@/store/shop/cart-slice'
 import { Button } from '../ui/button'
 import { addProductsToCart } from '@/store/shop/cart-slice'
+import { addProductsToWishlist } from '@/store/shop/wishlist-slice'
 function ShoppingHeader() {
 
   const navigate = useNavigate()
@@ -69,6 +70,7 @@ function ShoppingHeader() {
     if (data) {
       dispatch(storeLogout())
       dispatch(addProductsToCart([]))
+      dispatch(addProductsToWishlist([]))
       toast('Logout successfully')
     }
   }

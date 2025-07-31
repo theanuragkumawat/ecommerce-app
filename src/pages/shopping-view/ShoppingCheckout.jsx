@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux'
 import { Button } from '@/components/ui/button'
 
 import { useNavigate } from 'react-router'
+import databaseService from '@/appwrite/config'
+import { toast } from 'sonner'
 
 
 function ShoppingCheckout() {
@@ -12,6 +14,7 @@ function ShoppingCheckout() {
 
   const { cartItems } = useSelector(state => state.cart)
   const { userData } = useSelector(state => state.auth)
+  const { addressList } = useSelector(state => state.address)
   const totalCartAmount =
     cartItems && cartItems.length > 0
       ? cartItems.reduce(
@@ -23,11 +26,39 @@ function ShoppingCheckout() {
       )
       : 0;
 
-  async function createCheckout() {
+  const order = {
+    "userId": userData.$id,
+    "cartItems": cartItems,
+    "addressInfo": addressList[0]?.address,
+    "orderStatus": "pending",
+    "paymentMethod": "stripe",
+    "paymentStatus": "pending",
+    "totalAmount": totalCartAmount,
+    "orderDate": new Date().toISOString(),
+    "orderUpdateDate": new Date().toISOString(),
+    "successUrl": "http://localhost:5173/success",
+    "failureUrl": "http://localhost:5173/cancel"
+  };
 
-
+  const handleCheckout = async () => {
+    if(addressList && addressList.length >= 1){
+    try {
+      const data = await databaseService.createStripeOrder(order);
+      if (data) {
+        console.log(data);
+      }
+      console.log(order);
+      
+    } catch (error) {
+      console.log(error);
+    }
+  } else{
+    toast.error("Please add a address to continue",{
+      richColors:true,
+      position: 'top-center'
+    })
   }
-
+  };
 
   return (
     <div className='flex flex-col'>
@@ -59,7 +90,7 @@ function ShoppingCheckout() {
           <div className='w-full px-4'>
 
             <Button
-              onClick={createCheckout}
+              onClick={handleCheckout}
               className={'w-full'}
             >
               Checkout

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router";
 import { Layout } from "./components";
-import { AdminDashboard, AdminFeatures, AdminOrders, AdminProducts, Login, Register, ShoppingAccount, ShoppingCart, ShoppingCheckout, ShoppingHome, ShoppingListing, ShoppingProductOverview, ShoppingWishlist,ShoppingOrdersAddress, UnauthPage, ShoppingSearch } from "./pages";
+import { AdminDashboard, AdminFeatures, AdminOrders, AdminProducts, Login, Register, ShoppingAccount, ShoppingCart, ShoppingCheckout, ShoppingHome, ShoppingListing, ShoppingProductOverview, ShoppingWishlist, ShoppingOrdersAddress, UnauthPage, ShoppingSearch } from "./pages";
 import AdminLayout from "./components/admin-view/AdminLayout";
 import ShopingLayout from "./components/shopping-view/ShopingLayout";
 import NotFound from "./pages/NotFound";
@@ -14,6 +14,7 @@ import { addProductsToWishlist } from "./store/shop/wishlist-slice";
 import Verify from "./pages/verify/Verify";
 import Cancel from "./pages/stripe/Cancel";
 import Success from "./pages/stripe/Success";
+import RecoverAccount from "./pages/auth/RecoverAccount";
 
 function App() {
   const dispatch = useDispatch()
@@ -29,9 +30,9 @@ function App() {
   const [authCheckComplete, setAuthCheckComplete] = useState(false)
 
   async function getCart() {
-      if(!authCheckComplete){
-          return;
-      }
+    if (!authCheckComplete) {
+      return;
+    }
     try {
       if (userInfo) {
         const cart = await databaseService.getCart(userInfo.$id);
@@ -40,7 +41,7 @@ function App() {
         wishlist ? dispatch(addProductsToWishlist(JSON.parse(wishlist.products))) : null
       } else {
         const tempCart = localStorage.getItem('cart')
-        
+
         tempCart ? dispatch(addProductsToCart(JSON.parse(tempCart))) : null
       }
     } catch (error) {
@@ -56,8 +57,8 @@ function App() {
           dispatch(storeLogin(userData))
           localStorage.removeItem('cart');
           setIsLoading(false)
-          console.log(userData);
-          
+          // console.log(userData);
+
         } else {
           dispatch(storeLogout())
           setIsLoading(false)
@@ -68,10 +69,10 @@ function App() {
       })
   }, [])
 
-  
-useEffect(() => {
-  getCart()
-},[authCheckComplete,isAuthenticated])
+
+  useEffect(() => {
+    getCart()
+  }, [authCheckComplete, isAuthenticated])
 
 
   return (
@@ -83,9 +84,7 @@ useEffect(() => {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/verify" element={<Verify />} />
-              <Route path="/success" element={<Success />} />
-              <Route path="/cancel" element={<Cancel />} />
-
+              <Route path="/recover" element={<RecoverAccount />} />
             </Route>
 
             <Route path="/admin" element={<AdminLayout />}>
@@ -105,6 +104,8 @@ useEffect(() => {
               <Route path="/checkout" element={<ShoppingCheckout />} />
               <Route path="/search" element={<ShoppingSearch />} />
               <Route path="/product/:productId" element={<ShoppingProductOverview />} />
+              <Route path="/success" element={<Success />} />
+              <Route path="/cancel" element={<Cancel />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
@@ -112,7 +113,9 @@ useEffect(() => {
           </Routes>
         </div>
       </>) : (
-        <h1 className="text-center mt-96 text-2xl">Loading...</h1>
+        <div className="h-screen flex items-center justify-center">
+          <h1 className="text-center text-2xl text-neutral-900 font-semibold">Loading...</h1>
+        </div>
       )
   );
 }

@@ -11,7 +11,7 @@ import { toast } from "sonner"
 import databaseService from "@/appwrite/config";
 import { addProductsToCart } from "@/store/shop/cart-slice";
 
-function Login() {
+function Login({setOpenDialog}) {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
@@ -101,7 +101,7 @@ function Login() {
                         </button>   
                         <button
                             type="button" // Important: set type to button to prevent form submission
-                            onClick={() => setShowPassword((prev) => !prev)}
+                            onClick={() => setOpenDialog(true)}
                             className="ml-2 mt-1 pr-3 flex items-center text-sm leading-5 cursor-pointer font-medium  text-primary hover:underline"
                         >
                             Forget password?

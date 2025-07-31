@@ -1,12 +1,11 @@
 import { Client, Databases, Storage, ID, Query, Functions } from "appwrite";
 import conf from "@/conf/conf";
-// import paypal from "../paypal/paypal.js" 
-
+// import paypal from "../paypal/paypal.js"  
 export class DatabaseService {
   client = new Client();
   databases;
   bucket;
-  // functions;
+  functions;
   constructor() {
     this.client
       .setEndpoint(conf.appwriteUrl) // Your API Endpoint
@@ -14,7 +13,7 @@ export class DatabaseService {
 
     this.databases = new Databases(this.client);
     this.bucket = new Storage(this.client);
-    // this.functions = new Functions(this.client);
+    this.functions = new Functions(this.client);
   }
 
   async creatProduct({
@@ -251,7 +250,6 @@ export class DatabaseService {
         conf.appwriteCartCollectionId,
         userId,
       );
-
       return data;
     } catch (error) {
       console.log("get cart error", error);
@@ -385,89 +383,51 @@ export class DatabaseService {
   }
 
   //------------------Order service--------
-  // async createOrder(
-  //   {
-  //     userId,
-  //     cartItems,
-  //     addressInfo,
-  //     orderStatus,
-  //     paymentMethod,
-  //     paymentStatus,
-  //     totalAmount,
-  //     orderDate,
-  //     orderUpdateDate,
-  //     paymentId,
-  //     payerId,
-  //     cartId,
-  //   }
-  // ) {
-  //   try {
-  //     const create_payment_json = {
-  //       intent: "sale",
-  //       payer: {
-  //         payment_method: "paypal",
-  //       },
-  //       redirect_urls: {
-  //         return_url: "http://localhost:5173/shop/paypal-return",
-  //         cancel_url: "http://localhost:5173/shop/paypal-cancel",
-  //       },
-  //       transactions: [
-  //         {
-  //           item_list: {
-  //             items: cartItems.map((item) => ({
-  //               name: item.title,
-  //               sku: item.productId,
-  //               price: item.price.toFixed(2),
-  //               currency: "USD",
-  //               quantity: item.quantity,
-  //             })),
-  //           },
-  //           amount: {
-  //             currency: "USD",
-  //             total: totalAmount.toFixed(2),
-  //           },
-  //           description: "description",
-  //         },
-  //       ],
-  //     };
+  async createStripeOrder(order) {
+    console.log(order);
 
-  //     paypal.payment.create(create_payment_json, async (error, paymentInfo) => {
-  //       if (error) {
-  //         console.log(error);
-  //         return false
+    try {
+      const response = await this.functions.createExecution(
+        "6887a3e400317363932d",
+        JSON.stringify(order),
+        false,
+        "/checkout",
+        "POST"
+      )
+      // console.log(JSON.parse(response.responseBody));
+      window.location.href = JSON.parse(response.responseBody).checkout_url;
+      return true
 
-  //       } else {
-  //         const data = await this.databases.createDocument(
-  //           conf.appwriteDatabaseId,
-  //           conf.appwriteOrderCollectionId,
-  //           ID.unique(),
-  //           {
-  //             userId,
-  //             cartId,
-  //             cartItems,
-  //             addressInfo,
-  //             orderStatus,
-  //             paymentMethod,
-  //             paymentStatus,
-  //             totalAmount,
-  //             orderDate,
-  //             orderUpdateDate,
-  //             paymentId,
-  //             payerId,
-  //           }
-  //         );
-  //         const approvalURL = paymentInfo.links.find(
-  //           (link) => link.rel === "approval_url"
-  //         ).href;
+    } catch (error) {
+      console.log("Apwrite service :: createStripeOrder :: error", error);
 
-  //         return { orderId: data.$id, approvalURL: approvalURL }
-  //       }
-  //     });
-  //   } catch (error) {
-  //     console.log("Apwrite service :: createOrder :: error", error);
-  //   }
-  // }
+    }
+  }
 
+  async createOrder({ userId, cartItems, addressInfo, orderStatus, paymentMethod, paymentStatus, totalAmount, orderDate, orderUpdateDate }) {
+    try {
+      const data = await this.databases.createDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteOrderCollectionId,
+        ID.unique(),
+        {
+          userId,
+          cartItems,
+          addressInfo,
+          orderStatus,
+          paymentMethod,
+          paymentStatus,
+          totalAmount,
+          orderDate,
+          orderUpdateDate
+        }
+      );
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: createOrder :: error", error);
+      return false;
+    }
+  }
 
   // -----------------product Search Service-----------------
 
@@ -493,7 +453,7 @@ export class DatabaseService {
 
   async addProductReview({ productId, userId, userName, reviewTitle, reviewMessage, reviewValue }) {
     try {
-       console.log("Updating productId:", productId,userId, userName, reviewTitle, reviewMessage, reviewValue);
+      //  console.log("Updating productId:", productId,userId, userName, reviewTitle, reviewMessage, reviewValue);
       const data = await this.databases.createDocument(
         conf.appwriteDatabaseId,
         conf.appwriteReviewCollectionId,
@@ -504,7 +464,7 @@ export class DatabaseService {
           userName,
           reviewTitle,
           reviewMessage,
-          reviewValue: parseInt(reviewValue)
+          reviewValue: parseInt(reviewValue.toFixed(1))
         }
       );
 
@@ -516,20 +476,21 @@ export class DatabaseService {
 
       const totalReviewsLength = reviews.documents.length
       const averageReview = reviews.documents.reduce((acc, review) => acc + review.reviewValue, 0) / totalReviewsLength;
+      console.log("averageReview", averageReview);
 
-     
+
 
       const response = await this.databases.updateDocument(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionId,
         productId,
         {
-          averageReview: parseInt(averageReview.toFixed(1)),
+          averageReview: parseFloat(averageReview.toFixed(1)),
           totalReview: parseInt(totalReviewsLength)
         }
       );
-      console.log(response);
-      
+      // console.log(response);
+
 
       return data;
     } catch (error) {
@@ -537,7 +498,7 @@ export class DatabaseService {
     }
   }
 
-  async checkUserReview({productId, userId}) {
+  async checkUserReview({ productId, userId }) {
     try {
       const data = await this.databases.listDocuments(
         conf.appwriteDatabaseId,
@@ -556,12 +517,12 @@ export class DatabaseService {
     }
   }
 
-  async getProductReviews(productId){
+  async getProductReviews(productId) {
     try {
       const data = await this.databases.listDocuments(
         conf.appwriteDatabaseId,
         conf.appwriteReviewCollectionId,
-         [Query.equal("productId", productId)]
+        [Query.equal("productId", productId)]
       );
 
       return data;
@@ -570,12 +531,12 @@ export class DatabaseService {
     }
   }
 
-  async getUserReviews(userId){
+  async getUserReviews(userId) {
     try {
       const data = await this.databases.listDocuments(
         conf.appwriteDatabaseId,
         conf.appwriteReviewCollectionId,
-         [Query.equal("userId", userId)]
+        [Query.equal("userId", userId)]
       );
 
       return data;

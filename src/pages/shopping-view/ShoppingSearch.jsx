@@ -35,7 +35,7 @@ function ShoppingSearch() {
 
 
     return (
-        <div className='container w-2/3 mx-auto justify-center items-center mt-2'>
+        <div className='container w-5/6 md:w-9/10 lg: xl:w-3/4 2xl:w-2/3 mx-auto justify-center items-center mt-2'>
             <div className="flex justify-center mb-8">
                 <div className="w-full flex items-center relative"> {/* Added 'relative' for potential absolute positioning of icons */}
                     <label htmlFor="productSearch" className="sr-only">Search Products</label> {/* Added a visually hidden label for accessibility */}
@@ -65,7 +65,7 @@ function ShoppingSearch() {
                 </div>
             </div>
             {searchResults.length > 0 ? (
-                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+                <div className='grid grid-cols-1 xs sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
                     {
 
                         searchResults?.map((product) => (

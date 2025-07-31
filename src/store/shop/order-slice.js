@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     approvalURL:null,
     isLoading:false,
-    order: null
+    orders: []
 }
 
 const orderSlice = createSlice({
@@ -11,11 +11,14 @@ const orderSlice = createSlice({
     initialState,
     reducers: {
         addOrdersToState: function (state,action){
-            state.orderId = action.payload.orderId
-            state.approvalURL = action.payload.approvalURL
+             if (Array.isArray(action.payload)) {
+                 state.orders = action.payload
+             } else{
+                state.orders.push(action.payload)
+             }
         }
     }
 })
 
-export const {} = orderSlice.actions
+export const {addOrdersToState} = orderSlice.actions
 export default orderSlice.reducer

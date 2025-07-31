@@ -59,7 +59,7 @@ function Register({ setEmail, setVerifying }) {
         <form onSubmit={create}>
             <div className="flex flex-col gap-3">
                 <div className="grid w-full gap-1.5">
-                    <Label className="mb-1"></Label>
+                    {/* <Label className="">Name</Label> */}
                     <Input placeholder="Enter a name"
                         value={userDetails.name}
                         onChange={(e) => setUserDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }))}
@@ -67,7 +67,7 @@ function Register({ setEmail, setVerifying }) {
                         name="name" />
                 </div>
                 <div className="grid w-full gap-1.5">
-                    <Label className="mb-1"></Label>
+                    {/* <Label className="">Email</Label> */}
                     <Input placeholder="Enter your email"
                         value={userDetails.email}
                         onChange={(e) => setUserDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }))}
@@ -75,7 +75,7 @@ function Register({ setEmail, setVerifying }) {
                         name="email" />
                 </div>
                 <div className="grid w-full gap-1.5">
-                    <Label className=""></Label>
+                    {/* <Label className="">Password</Label> */}
                     <Input
                         placeholder="Enter your password"
                         value={userDetails.password}

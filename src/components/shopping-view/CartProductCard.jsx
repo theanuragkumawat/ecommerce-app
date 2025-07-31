@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 function CartProductCard({ productId, quantity, className = "" }) {
   const [image, setImage] = useState('i')
   const { cartItems } = useSelector(state => state.cart)
+  const { currency } = useSelector(state => state.shopProducts)
   const { wishlistItems } = useSelector(state => state.wishlist)
   const { userData, isAuthenticated } = useSelector(state => state.auth)
   const dispatch = useDispatch()
@@ -181,11 +182,10 @@ function CartProductCard({ productId, quantity, className = "" }) {
   return (
     <div className={`${className} rounded-lg border border-gray-200 bg-white sm:p-1 md:py-0.5 shadow-sm dark:border-gray-700 dark:bg-gray-800 `}>
       <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
-        <Link href="#" className="shrink-0 md:order-1">
+        <Link className="shrink-0 md:order-1">
           <img
             className="h-36 dark:hidden"
             src={image}
-            alt=""
           />
 
         </Link>
@@ -252,13 +252,13 @@ function CartProductCard({ productId, quantity, className = "" }) {
           </div>
           <div className="text-end md:order-4 md:w-32">
             <p className="pr-4 text-base font-bold text-gray-900 dark:text-white">
-              ${productDetails.salePrice > 0 ? productDetails.salePrice : productDetails.price}
+              {currency}{productDetails.salePrice > 0 ? productDetails.salePrice : productDetails.price}
             </p>
           </div>
         </div>
         <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
           <Link
-            href="#"
+            to={`/product/${productId}`}
             className="text-base font-medium text-gray-900 hover:underline dark:text-white"
           >
             {productDetails.title}

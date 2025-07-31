@@ -25,6 +25,8 @@ function Address() {
   async function getAllAddress() {
     if (userData) {
       const data = await databaseService.getAddress(userData.$id)
+      console.log(data);
+      
       if (data) {
         dispatch(addAddress(data.documents))
       }
@@ -41,7 +43,6 @@ function Address() {
   
   const create = async (e) => {
     e.preventDefault()
-    console.log("click");
 
     try {
       if (isEditing) {
