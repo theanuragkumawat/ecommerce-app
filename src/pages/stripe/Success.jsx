@@ -32,11 +32,24 @@ function Success() {
     try {
       const data = await databaseService.createOrder(orderData)
       setDisplayData(data)
-      dispatch(addOrdersToState(data))
+      // dispatch(addOrdersToState(data))
       setIsLoading(false)
     } catch (error) {
       console.log(error);
       setIsLoading(false)
+    }
+  }
+
+  async function deleteCart(){
+    try {
+      const data = await databaseService.deleteCart(orderData.userId)
+      if(data){
+        console.log("cart");
+        dispatch(addProductsToCart([]))
+      }
+    } catch (error) {
+      console.log(error);
+      
     }
   }
 
@@ -65,8 +78,7 @@ function Success() {
                   0
                 )
                 : 0;
-            setOrderData((prev) => ({ ...prev, orderDate: new Date().toLocaleDateString(), orderUpdateDate: new Date().toLocaleDateString(), userId: data1.$id, cartItems: data2.products, addressInfo: data3.documents[0].address, totalAmount: JSON.stringify(totalCartAmount) }))
-
+            setOrderData((prev) => ({ ...prev, orderDate: new Date().toLocaleDateString(), orderUpdateDate: new Date().toLocaleDateString(), userId: data1.$id, cartItems: data2.products, addressInfo: JSON.stringify(data3.documents.find(item => item.isDefault)), totalAmount: JSON.stringify(totalCartAmount) }))
           }
         }
       }
@@ -81,6 +93,11 @@ function Success() {
       createNewOrder()
     }
   }, [orderData])
+  useEffect(() => {
+    if (displayData.userId) {
+      deleteCart()
+    }
+  }, [displayData])
 
   useEffect(() => {
     fetchAllDetails()
@@ -102,12 +119,16 @@ function Success() {
               <dd className="font-medium text-gray-900 dark:text-white sm:text-end">{displayData?.paymentMethod}</dd>
             </dl>
             <dl className="sm:flex items-center justify-between gap-4">
+              <dt className="font-normal mb-1 sm:mb-0 text-gray-500 dark:text-gray-400">Toatl Amount</dt>
+              <dd className="font-medium text-gray-900 dark:text-white sm:text-end">{displayData?.totalAmount}</dd>
+            </dl>
+            <dl className="sm:flex items-center justify-between gap-4">
               <dt className="font-normal mb-1 sm:mb-0 text-gray-500 dark:text-gray-400">Payment Status</dt>
               <dd className="font-medium text-gray-900 dark:text-white sm:text-end">{displayData?.paymentStatus}</dd>
             </dl>
             <dl className="sm:flex items-center justify-between gap-4">
               <dt className="font-normal mb-1 sm:mb-0 text-gray-500 dark:text-gray-400">Address</dt>
-              <dd className="font-medium text-gray-900 dark:text-white sm:text-end">{displayData && displayData.addressInfo ? displayData.addressInfo : "No"}</dd>
+              <dd className="font-medium text-gray-900 dark:text-white sm:text-end">{displayData && displayData.addressInfo ? JSON.parse(displayData.addressInfo).address : "No"}</dd>
             </dl>
             <dl className="sm:flex items-center justify-between gap-4">
               <dt className="font-normal mb-1 sm:mb-0 text-gray-500 dark:text-gray-400">Phone</dt>
@@ -116,10 +137,14 @@ function Success() {
           </Card>
           <div className="flex items-center space-x-4">
             <Button>
+              <Link to="/orders">
               Track your order
+              </Link>
             </Button>
             <Button>
+              <Link to="/listing">
               Return to shopping
+              </Link>
             </Button>
           </div>
         </div>

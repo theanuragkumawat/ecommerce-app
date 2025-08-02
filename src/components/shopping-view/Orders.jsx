@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
   Table,
@@ -13,7 +13,14 @@ import {
 import { Button } from '../ui/button'
 import { Dialog } from '../ui/dialog'
 import ShoppingOrderDetailsView from './ShoppingOrderDetailsView'
+import databaseService from '@/appwrite/config'
+import { useDispatch, useSelector } from 'react-redux'
+import { addOrdersToState } from '@/store/shop/order-slice'
 function Orders() {
+  const dispatch = useDispatch()
+  const {userData} = useSelector(state => state.auth)
+  const {orders} = useSelector(state => state.order)
+  const {currency} = useSelector(state => state.shopProducts)
 
   const invoices = [
     {
@@ -59,7 +66,26 @@ function Orders() {
       paymentMethod: "Credit Card",
     },
   ]
-    const [openOrderDeatils, setOpenOrderDeatils] = React.useState(false)
+  // const [currentOrders,setCurrentOrders] = useState([])
+  const [openOrderDeatils, setOpenOrderDeatils] = useState(false)
+  const [addressData,setAddressData] = useState({})
+  async function getOrders() {
+    try {
+      const data = await databaseService.getAllOrders(userData.$id)
+      if(data){
+        dispatch(addOrdersToState(data.documents))
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    if(userData?.$id){
+      getOrders()
+    }
+  },[userData])
+
 
   return (
     <div className='text-orange-6s00'>
@@ -75,27 +101,22 @@ function Orders() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {invoices.map((invoice) => (
-            <TableRow key={invoice.invoice}>
-              <TableCell className="font-medium">{invoice.invoice}</TableCell>
-              <TableCell>{invoice.paymentStatus}</TableCell>
-              <TableCell>{invoice.paymentMethod}</TableCell>
-              <TableCell className="">{invoice.totalAmount}</TableCell>
+          {orders.map((invoice) => (
+            <TableRow key={invoice.$id}>
+              <TableCell className="font-medium">{invoice.$id}</TableCell>
+              <TableCell>{invoice.orderDate}</TableCell>
+              <TableCell>{invoice.orderStatus}</TableCell>
+              <TableCell className="">{currency}{invoice.totalAmount}</TableCell>
               <TableCell className="text-right">
                 <Dialog open={openOrderDeatils} onOpenChange={() => setOpenOrderDeatils(false)}>
                   <Button onClick={() => setOpenOrderDeatils(true)}>View Details</Button>
-                  <ShoppingOrderDetailsView />
+                  <ShoppingOrderDetailsView orderDetails={invoice}/>
                 </Dialog>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={3}>Total</TableCell>
-            <TableCell className="">$2,500.00</TableCell>
-          </TableRow>
-        </TableFooter>
+ 
       </Table>
     </div>
   )

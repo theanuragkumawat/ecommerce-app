@@ -13,6 +13,7 @@ function Address() {
   const dispatch = useDispatch()
   const { addressList } = useSelector(state => state.address)
   const { userData } = useSelector(state => state.auth)
+  const [selectedAddress, setSelectedAddress] = useState(false)
 
   const initialDetails = {
     address: '',
@@ -25,8 +26,8 @@ function Address() {
   async function getAllAddress() {
     if (userData) {
       const data = await databaseService.getAddress(userData.$id)
-      console.log(data);
-      
+      // console.log(data);
+
       if (data) {
         dispatch(addAddress(data.documents))
       }
@@ -40,21 +41,21 @@ function Address() {
 
   const [addressData, setaddressData] = useState(initialDetails)
   const [isEditing, setIsEditing] = useState(false)
-  
+
   const create = async (e) => {
     e.preventDefault()
 
     try {
       if (isEditing) {
-        const data = await databaseService.updateAddress({ ...addressData, userId: userData.$id },isEditing)
+        const data = await databaseService.updateAddress({ ...addressData }, isEditing)
         if (data) {
           getAllAddress()
         }
-         setIsEditing(false)
-         toast("Address updated")
+        setIsEditing(false)
+        toast("Address updated")
       } else {
-        if(addressList.length >= 3){
-          toast.error("You can add max 3 addresses",{})
+        if (addressList.length >= 3) {
+          toast.error("You can add max 3 addresses", {})
           return
         }
         const data = await databaseService.createAddress({ ...addressData, userId: userData.$id })
@@ -69,12 +70,42 @@ function Address() {
     }
   }
 
+  async function changeSelectAddress(address) {
+    // console.log(address);
+    
+    try {
+      if (address.isDefault) {
+        return
+      } else {
+        const i = addressList.find((i) => i.isDefault == true)
+        if (i) {          
+          await databaseService.updateAddress({ ...i, isDefault: false }, i.$id)
+          const response =  await databaseService.updateAddress({ ...address, isDefault: true }, address.$id)
+          // console.log(response);
+        } else{
+          const response =  await databaseService.updateAddress({ ...address, isDefault: true }, address.$id)
+          // console.log(response);
+          
+        }
+      }
+
+    } catch (error) {
+      console.log(error);
+
+    } finally{
+      getAllAddress()
+    }
+  }
+
   return (
     <div>
       <div className='flex flex-col items-center sm:flex-row gap-3 '>
         {
           addressList?.map(item => (
-            <AddressCard key={item.$id} addressData={item} getAllAddress={getAllAddress} setaddressData={setaddressData} setIsEditing={setIsEditing} />
+            <div className={`${item.isDefault ? "border-2 border-neutral-900 shadow-md" : ""} rounded-2xl`} onClick={() => changeSelectAddress(item)} key={item.$id}>
+
+              <AddressCard  addressData={item} getAllAddress={getAllAddress} setaddressData={setaddressData} setIsEditing={setIsEditing} />
+            </div>
           ))
         }
       </div>

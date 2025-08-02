@@ -25,17 +25,6 @@ function AddressCard({ addressData, getAllAddress, setaddressData, setIsEditing 
         setIsEditing(addressData.$id)
     }
 
-    // async function handleDefault() {
-    //     let existing = addressList.find((item) => item.isDefault == true)
-    //     if (addressData.isDefault == false) {
-    //         console.log("already selected");
-    //         return
-    //     } else {
-    //         console.log("no same");
-
-    //     }
-    // }
-
     return (
         <Card  className={'p-3 gap-4 w-xs sm:w-sm'}>
             <div className=''>

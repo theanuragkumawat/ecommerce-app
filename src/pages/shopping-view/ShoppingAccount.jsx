@@ -26,6 +26,7 @@ const ShoppingAccount = () => {
   const { userData, isAuthenticated } = useSelector(state => state.auth)
   const { wishlistItems } = useSelector(state => state.wishlist)
   const [userReviews, setUserReviews] = useState([]);
+  const [userOrders, setUserOrders] = useState([]);
   const dispatch = useDispatch()
   const navItems = [
     { name: 'Overview', icon: Home },
@@ -78,9 +79,23 @@ const ShoppingAccount = () => {
     }
   }
 
+  // get user orders
+
+  async function getUserOrders() {
+    try {
+      const data = await databaseService.getAllOrders(userData?.$id)
+      if (data) {
+        setUserOrders(data.documents);
+      }
+    } catch (error) {
+      console.log('Failed to fetch user orders')
+    }
+  }
+
   useEffect(() => {
     if (isAuthenticated) {
       getUserReviews();
+      getUserOrders();
     }
   }, [isAuthenticated]);
 
@@ -149,7 +164,7 @@ const ShoppingAccount = () => {
               </Card>
 
               <div className="grid grid-cols-3 gap-4 mb-8 justify-center">
-                <OverviewCard icon={ShoppingCart} title={`${userData?.totalOrders ? userData?.totalOrders : "0"} orders`} subtitle="Total orders" />
+                <OverviewCard icon={ShoppingCart} title={`${userOrders?.length > 0 ? userOrders?.length : "0"} orders`} subtitle="Total orders" />
                 <OverviewCard icon={MessageSquare} title={`${userReviews?.length > 0 ? userReviews.length : "0"} reviews`} subtitle="Total reviews" />
                 <OverviewCard icon={Heart} title={`${wishlistItems?.length ? wishlistItems?.length : "0"} products`} subtitle="Favorite products" />
               </div>

@@ -81,13 +81,13 @@ function WishlistProductCard({ productId }) {
     }, [])
     return (
         <div>
-            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+            <div className="rounded-lg border border-gray-200 bg-white md:py-2 md:px-1 md:pr-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                 <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
 
                     {/* IMAGE */}
                     <Link className="shrink-0 md:order-1">
                         <img
-                            className="h-20 dark:hidden"
+                            className="h-32 dark:hidden rounded-md"
                             src={image}
                         />
                     </Link>

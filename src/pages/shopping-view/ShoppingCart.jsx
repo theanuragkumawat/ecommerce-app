@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { Link } from 'react-router'
 
 function ShoppingCart() {
-
+  const {currency} = useSelector(state => state.shopProducts)
   const { cartItems } = useSelector(state => state.cart);
 
   const totalCartAmount =
@@ -62,7 +62,7 @@ function ShoppingCart() {
                       Original price
                     </dt>
                     <dd className="text-base font-medium text-gray-900 dark:text-white">
-                      ${totalCartAmount}
+                      {currency}{totalCartAmount}
                     </dd>
                   </dl>
                   <dl className="flex items-center justify-between gap-4">
@@ -70,7 +70,7 @@ function ShoppingCart() {
                       Discount
                     </dt>
                     <dd className="text-base font-medium text-green-600">
-                      -$0
+                      -{currency}0
                     </dd>
                   </dl>
 
@@ -81,7 +81,7 @@ function ShoppingCart() {
                     Total
                   </dt>
                   <dd className="text-base font-bold text-gray-900 dark:text-white">
-                    ${totalCartAmount}
+                    {currency}{totalCartAmount}
                   </dd>
                 </dl>
               </div>

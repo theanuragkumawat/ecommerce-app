@@ -26,7 +26,7 @@ function ShoppingProductOverview() {
     const [rating, setRating] = useState(0)
     const [isWishlisted, setIsWishlisted] = useState(false)
     const initialReviewData = {
-        productId: "",
+        productId: productId,
         userId: "",
         userName: "",
         reviewTitle: "",
@@ -59,7 +59,7 @@ function ShoppingProductOverview() {
             if (exist.documents.length > 0) {
                 toast.warning("You have already added a review")
                 // console.log(exist);
-                return
+                return;
             }
 
             const data = await databaseService.addProductReview(reviewData)
@@ -80,7 +80,7 @@ function ShoppingProductOverview() {
     async function getProductDetails() {
         const data = await databaseService.getProduct(productId)
         if (data) {
-            setReviewData((prev) => ({ ...prev, productId: productId, userId: userData.$id, userName: userData.name }))
+        
             setProduct(data)
             const url = await databaseService.getFilePreview(data.image)
             setImage(url)
@@ -94,6 +94,12 @@ function ShoppingProductOverview() {
     useEffect(() => {
         getProductDetails()
     }, [])
+
+    useEffect(() => {
+        if(userData && userData?.$id){
+                setReviewData((prev) => ({ ...prev, productId: productId, userId: userData.$id, userName: userData.name ? userData.name : "Unknown user"}))
+        }
+    },[userData])
     async function addToCartHandler(e) {
         e.stopPropagation();
         try {
@@ -111,7 +117,7 @@ function ShoppingProductOverview() {
                             dispatch(addProductsToCart(JSON.parse(data.products)))
                         }
                     } else {
-                        temp.push({ productId: product.$id, quantity: 1, price: product.price });
+                        temp.push({ productId: product.$id, quantity: 1, price: product.price,title:product.title });
                         const data = await databaseService.updateCart(userData.$id, temp);
                         if (data) {
                             dispatch(addProductsToCart(JSON.parse(data.products)))
@@ -120,7 +126,7 @@ function ShoppingProductOverview() {
                     }
                 } else {
                     let productArr = [
-                        { productId: product.$id, quantity: 1, price: product.price }
+                        { productId: product.$id, quantity: 1, price: product.price,title:product.title }
                     ]
                     const response = await databaseService.createCart(userData.$id, productArr);
                     if (response) {
@@ -142,7 +148,7 @@ function ShoppingProductOverview() {
                         localStorage.setItem("cart", JSON.stringify(temp))
                         dispatch(addProductsToCart(temp))
                     } else {
-                        temp.push({ productId: product.$id, quantity: 1, price: product.price });
+                        temp.push({ productId: product.$id, quantity: 1, price: product.price,title:product.title });
                         localStorage.setItem("cart", JSON.stringify(temp))
                         dispatch(addProductsToCart(temp))
                     }
@@ -150,7 +156,7 @@ function ShoppingProductOverview() {
 
                 } else {
                     let productArr = [
-                        { productId: product.$id, quantity: 1, price: product.price }
+                        { productId: product.$id, quantity: 1, price: product.price,title:product.title }
                     ]
                     localStorage.setItem("cart", JSON.stringify(productArr))
                     dispatch(addProductsToCart(productArr))

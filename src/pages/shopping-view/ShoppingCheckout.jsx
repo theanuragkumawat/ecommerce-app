@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import img from "../../assets/account.jpg"
 import { Address, CartProductCard } from '@/components'
 import { useSelector } from 'react-redux'
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router'
 import databaseService from '@/appwrite/config'
 import { toast } from 'sonner'
+import { LoaderCircle } from 'lucide-react'
 
 
 function ShoppingCheckout() {
@@ -15,6 +16,8 @@ function ShoppingCheckout() {
   const { cartItems } = useSelector(state => state.cart)
   const { userData } = useSelector(state => state.auth)
   const { addressList } = useSelector(state => state.address)
+  const [isDisabled, setIsDisabled] = useState(false)
+
   const totalCartAmount =
     cartItems && cartItems.length > 0
       ? cartItems.reduce(
@@ -41,25 +44,44 @@ function ShoppingCheckout() {
   };
 
   const handleCheckout = async () => {
-    if(addressList && addressList.length >= 1){
-    try {
-      const data = await databaseService.createStripeOrder(order);
-      if (data) {
-        console.log(data);
-      }
-      console.log(order);
-      
-    } catch (error) {
-      console.log(error);
-    }
-  } else{
-    toast.error("Please add a address to continue",{
-      richColors:true,
-      position: 'top-center'
-    })
-  }
-  };
+    setIsDisabled(true)
+    if (cartItems.length != 0) {
 
+      if (addressList && addressList.length >= 1) {
+        if (addressList.find(item => item.isDefault)) {
+
+          try {
+            const data = await databaseService.createStripeOrder(order);
+            if (data) {
+              console.log(data);
+            }
+            console.log(order);
+
+          } catch (error) {
+            console.log(error);
+            setIsDisabled(false)
+          }
+        } else {
+          toast.error("Please select a address to continue", {
+            richColors: true,
+            position: 'top-center'
+          })
+        }
+      } else {
+        toast.error("Please add a address to continue", {
+          richColors: true,
+          position: 'top-center'
+        })
+
+      }
+    } else {
+      toast.error("You don't have any product in your cart", {
+        richColors: true,
+        position: 'top-center'
+      })
+    }
+
+  };
   return (
     <div className='flex flex-col'>
       <div className="relative h-[300px] w-full overflow-hidden">
@@ -90,10 +112,13 @@ function ShoppingCheckout() {
           <div className='w-full px-4'>
 
             <Button
+              disabled={isDisabled}
               onClick={handleCheckout}
               className={'w-full'}
             >
-              Checkout
+             {
+              isDisabled ? <>Processing <LoaderCircle className='mr-3 size-6 animate-spin' /> </> : "Checkout"
+             } 
             </Button>
           </div>
         </div>

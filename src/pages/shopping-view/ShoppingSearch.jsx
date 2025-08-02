@@ -44,13 +44,13 @@ function ShoppingSearch() {
                         value={keyword}
                         name="keyword"
                         onChange={(event) => setKeyword(event.target.value)}
-                        className="py-6 pr-4" // Added right padding for a potential search icon
-                        placeholder="Search products, brands, or categories..." // More descriptive placeholder
-                        aria-label="Search products, brands, or categories" // ARIA label for improved accessibility
-                        type="search" // Semantic input type for search fields
-                        autoComplete="off" // Disable browser autocomplete if not desired
+                        className={"py-6 pr-4 lg:text-lg"} 
+                        placeholder="Search products, brands, or categories..." 
+                        aria-label="Search products, brands, or categories" 
+                        type="search" 
+                        autoComplete="off" 
                     />
-                    {keyword && ( // Conditionally render a clear button if there's text
+                    {keyword && ( 
                         <button
                             type="button"
                             onClick={() => setKeyword('')}

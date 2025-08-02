@@ -15,7 +15,6 @@ function ShoppingProductCard({ product }) {
     const {wishlistItems} = useSelector(state => state.wishlist)
     const {currency} = useSelector(state => state.shopProducts)
     const [isWishlisted,setIsWishlisted] = useState(false)
-console.log(currency);
 
     const [imageURL, setImageURL] = useState("i")
     async function getImage() {
@@ -48,7 +47,7 @@ console.log(currency);
                             dispatch(addProductsToCart(JSON.parse(data.products)))
                         }
                     } else {
-                        temp.push({ productId: product.$id, quantity: 1, price: product.price });
+                        temp.push({ productId: product.$id, quantity: 1, price: product.price,title:product.title });
                         const data = await databaseService.updateCart(userData.$id, temp);
                         if (data) {
                             dispatch(addProductsToCart(JSON.parse(data.products)))
@@ -57,7 +56,7 @@ console.log(currency);
                     }
                 } else {
                     let productArr = [
-                        { productId: product.$id, quantity: 1, price: product.price }
+                        { productId: product.$id, quantity: 1, price: product.price,title:product.title }
                     ]
                     const response = await databaseService.createCart(userData.$id, productArr);
                     if (response) {
@@ -73,13 +72,13 @@ console.log(currency);
                     let temp = cartItems.slice()
                     const existing = temp.find((i) => i.productId === product.$id)
                     if (existing) {
-                        console.log(existing);
+                        // console.log(existing);
 
                         temp = temp.map(item => item.productId == product.$id ? { ...item, quantity: item.quantity + 1 } : item)
                         localStorage.setItem("cart", JSON.stringify(temp))
                         dispatch(addProductsToCart(temp))
                     } else {
-                        temp.push({ productId: product.$id, quantity: 1, price: product.price });
+                        temp.push({ productId: product.$id, quantity: 1, price: product.price,title:product.title });
                         localStorage.setItem("cart", JSON.stringify(temp))
                         dispatch(addProductsToCart(temp))
                     }

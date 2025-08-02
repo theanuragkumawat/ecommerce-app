@@ -338,13 +338,13 @@ export class DatabaseService {
     }
   }
 
-  async updateAddress({ address, pincode, phone, notes, city }, id) {
+  async updateAddress({ address, pincode, phone, notes, city,isDefault }, id) {
     try {
       const data = await this.databases.updateDocument(
         conf.appwriteDatabaseId,
         conf.appwriteAddressCollectionId,
         id,
-        { address, pincode, phone, notes, city }
+        { address, pincode, phone, notes, city,isDefault }
       );
 
       return data;
@@ -426,6 +426,20 @@ export class DatabaseService {
     } catch (error) {
       console.log("Apwrite service :: createOrder :: error", error);
       return false;
+    }
+  }
+
+   async getAllOrders(userId) {
+    try {
+      const data = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteOrderCollectionId,
+        [Query.equal("userId", userId)]
+      );
+
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: getAllOrders :: error", error);
     }
   }
 
@@ -542,6 +556,21 @@ export class DatabaseService {
       return data;
     } catch (error) {
       console.log("Apwrite service :: getUserReviews :: error", error);
+    }
+  }
+
+
+  //-------COUPON Service
+
+  async getAllCoupons() {
+    try {
+      const data = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCouponCollectionId
+      );
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: getAllCoupons :: error", error);
     }
   }
 

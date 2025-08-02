@@ -1,72 +1,87 @@
-import { DialogContent } from '@/components/ui/dialog'
+import { DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import React from 'react'
+import { useSelector } from 'react-redux'
 
 
-function ShoppingOrderDetailsView() {
+function ShoppingOrderDetailsView({ orderDetails }) {
+    const { currency } = useSelector(state => state.shopProducts)
+    const cartItems = JSON.parse(orderDetails.cartItems)
+    const addressDetails = JSON.parse(`${orderDetails.addressInfo}`)
+
     return (
-
         <DialogContent className="sm:max-w-[600px]">
+            <DialogTitle></DialogTitle>
+            <DialogDescription></DialogDescription>
             <div className="grid gap-6">
                 <div className="grid gap-2">
-                    <div className="flex mt-6 items-center justify-between">
-                        <p className="font-medium">Order ID</p>
-                        <Label>orderDetails?._id</Label>
+                    <div className="font-medium text-xl">Order Details</div>
+                    <div className="flex mt-2 items-center justify-between">
+                        <p className="">Order ID</p>
+                        <Label className={'font-normal'}>{orderDetails?.$id}</Label>
                     </div>
                     <div className="flex mt-2 items-center justify-between">
-                        <p className="font-medium">Order Date</p>
-                        <Label>orderDetails?.orderDate.split("T")[0]</Label>
+                        <p className="">Order Date</p>
+                        <Label className={'font-normal'}>{orderDetails?.orderDate}</Label>
                     </div>
                     <div className="flex mt-2 items-center justify-between">
-                        <p className="font-medium">Order Price</p>
-                        <Label>$orderDetails?.totalAmount</Label>
+                        <p className="">Order Price</p>
+                        <Label className={'font-normal'}>{currency}{orderDetails?.totalAmount}</Label>
                     </div>
                     <div className="flex mt-2 items-center justify-between">
-                        <p className="font-medium">Payment method</p>
-                        <Label>orderDetails?.paymentMethod</Label>
+                        <p className="">Payment method</p>
+                        <Label className={'font-normal'}>{orderDetails?.paymentMethod}</Label>
                     </div>
                     <div className="flex mt-2 items-center justify-between">
-                        <p className="font-medium">Payment Status</p>
-                        <Label>orderDetails?.paymentStatus</Label>
+                        <p className="">Payment Status</p>
+                        <Label className={'font-normal'}>{orderDetails?.paymentStatus}</Label>
                     </div>
                 </div>
                 <Separator />
                 <div className="grid gap-4">
                     <div className="grid gap-2">
-                        <div className="font-medium">Order Details</div>
+                        <div className="font-medium text-xl">Products Details</div>
                         <ul className="grid gap-3">
-                            {/* {orderDetails?.cartItems && orderDetails?.cartItems.length > 0
-                                ? orderDetails?.cartItems.map((item) => (
-                                    <li className="flex items-center justify-between">
+                            {cartItems && cartItems.length > 0
+                                ? cartItems.map((item,index) => (
+                                    <li key={index} className="flex items-center justify-between">
                                         <span>Title: {item.title}</span>
                                         <span>Quantity: {item.quantity}</span>
-                                        <span>Price: ${item.price}</span>
+                                        <span>Price: {currency}{item.price}</span>
                                     </li>
                                 ))
-                                : null} */}
-
-                            <li className="flex items-center justify-between">
-                                <span>Title: RJ best coat</span>
-                                <span>Quantity: 5</span>
-                                <span>Price: $051</span>
-                            </li>
+                                : null}
                         </ul>
                     </div>
                 </div>
+                <Separator />
 
-                <div className="grid gap-4">
+                <div className="grid gap-2">
+                    <div className="font-medium text-xl">Shipping Info</div>
                     <div className="grid gap-2">
-                        <div className="font-medium">Shipping Info</div>
-                        <div className="grid gap-0.5 text-muted-foreground">
-                            <span>user.userName</span>
-                            <span>orderDetails?.addressInfo?.address</span>
-                            <span>orderDetails?.addressInfo?.city</span>
-                            <span>orderDetails?.addressInfo?.pincode</span>
-                            <span>orderDetails?.addressInfo?.phone</span>
-                            <span>orderDetails?.addressInfo?.notes</span>
+                        <div className="flex mt-2 items-center justify-between">
+                            <p className="font-normal">Address</p>
+                            <Label className={'font-normal'}>{addressDetails?.address}</Label>
+                        </div>
+                        <div className="flex mt-2 items-center justify-between">
+                            <p className="font-normal">City</p>
+                            <Label className={'font-normal'}>{addressDetails?.city}</Label>
+                        </div>
+                        <div className="flex mt-2 items-center justify-between">
+                            <p className="font-normal">Pincode</p>
+                            <Label className={'font-normal'}>{addressDetails?.pincode}</Label>
+                        </div>
+                        <div className="flex mt-2 items-center justify-between">
+                            <p className="font-normal">Phone</p>
+                            <Label className={'font-normal'}>{addressDetails?.phone}</Label>
+                        </div>
+                        <div className="flex mt-2 items-center justify-between">
+                            <p className="font-normal">Notes</p>
+                            <Label className={'font-normal'}>{addressDetails?.notes ? addressDetails?.notes : null}</Label>
                         </div>
                     </div>
+
                 </div>
             </div>
         </DialogContent>
