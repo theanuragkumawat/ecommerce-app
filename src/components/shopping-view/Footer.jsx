@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from '../ui/button'
 import { Store } from 'lucide-react'
+import { Separator } from '../ui/separator'
 
 function Footer() {
 
@@ -11,7 +12,7 @@ function Footer() {
             <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
                 <div className="lg:flex lg:items-start lg:gap-8">
                     <div className="text-gray-900 dark:text-teal-300">
-                        <Store className='mt-1'/>
+                        <Store size={30} className='mt-1'/>
                     </div>
 
                     <div className="mt-8 grid grid-cols-2 gap-8 lg:mt-0 lg:grid-cols-5 lg:gap-y-16">
@@ -20,8 +21,7 @@ function Footer() {
                                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Get the latest news!</h2>
 
                                 <p className="mt-4 text-gray-500 dark:text-gray-400">
-                                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse non cupiditate quae nam
-                                    molestias.
+                                    Subscribe to our newsletter to receive updates, access to exclusive deals, and more.
                                 </p>
                             </div>
                         </div>
@@ -31,7 +31,7 @@ function Footer() {
                                 <label htmlFor="UserEmail" className="sr-only"> Email </label>
 
                                 <div
-                                    className="border border-gray-100 p-2 focus-within:ring-3 sm:flex sm:items-center sm:gap-4 dark:border-gray-800"
+                                    className="border rounded-xl border-gray-100 p-2 focus-within:ring-3 sm:flex sm:items-center sm:gap-4 dark:border-gray-800"
                                 >
                                     <input
                                         type="email"
@@ -41,7 +41,7 @@ function Footer() {
                                     />
 
                                     <Button
-                                        className="mt-1 w-full  px-6 py-3 text-sm font-bold tracking-wide text-white uppercase transition-none  sm:mt-0 sm:w-auto sm:shrink-0"
+                                        className="mt-5 w-full rounded-lg px-6 py-3 text-sm font-bold tracking-wide text-white uppercase transition-none  sm:mt-0 sm:w-auto sm:shrink-0"
                                     >
                                         Sign Up
                                     </Button>
@@ -273,10 +273,11 @@ function Footer() {
                     </div>
                 </div>
 
-                <div className="mt-8 border-t border-gray-100 pt-8 dark:border-gray-800">
+                <Separator className={'mt-8'}/>
+                <div className="pt-8 dark:border-gray-800">
                     <div className="sm:flex sm:justify-between">
                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                            &copy; {year}. Ecommerce App. All rights reserved....tyh
+                            &copy; {year}. Ecommerce App. All rights reserved.
                         </p>
 
                         <ul className="mt-8 flex flex-wrap justify-start gap-4 text-xs sm:mt-0 lg:justify-end">

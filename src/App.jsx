@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router";
 import { Layout } from "./components";
-import { AdminDashboard, AdminFeatures, AdminOrders, AdminProducts, Login, Register, ShoppingAccount, ShoppingCart, ShoppingCheckout, ShoppingHome, ShoppingListing, ShoppingProductOverview, ShoppingWishlist, ShoppingOrdersAddress, UnauthPage, ShoppingSearch } from "./pages";
+import { AdminDashboard, AdminFeatures, AdminOrders, AdminProducts, Login, Register, ShoppingAccount, ShoppingCart, ShoppingCheckout, ShoppingHome, ShoppingListing, ShoppingProductOverview, ShoppingWishlist, ShoppingOrdersAddress, UnauthPage, ShoppingSearch, AdminLogin } from "./pages";
 import AdminLayout from "./components/admin-view/AdminLayout";
 import ShopingLayout from "./components/shopping-view/ShopingLayout";
 import NotFound from "./pages/NotFound";
@@ -56,11 +56,22 @@ function App() {
         if (userData) {
           dispatch(storeLogin(userData))
           localStorage.removeItem('cart');
+          if(location.pathname.includes('admin')){
+            if(userData.email == "anurag.kmwt7851@gmail.com"){
+              navigate("/admin/dashboard")
+
+            } else{
+              navigate("/admin/login")
+            }
+          } 
           setIsLoading(false)
           // console.log(userData);
 
         } else {
           dispatch(storeLogout())
+          if(location.pathname.includes('admin')){
+            navigate("/admin/login")
+          } 
           setIsLoading(false)
         }
       })
@@ -75,6 +86,7 @@ function App() {
   }, [authCheckComplete, isAuthenticated])
 
 
+
   return (
     !isLoading ?
       (<>
@@ -87,6 +99,7 @@ function App() {
               <Route path="/recover" element={<RecoverAccount />} />
             </Route>
 
+              <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="products" element={<AdminProducts />} />

@@ -18,7 +18,7 @@ function AdminHeader({setOpen}) {
             console.log(data);
             
             toast('Logout successfully')
-            navigate('/login')
+            navigate('/admin/login')
         }
     }
 

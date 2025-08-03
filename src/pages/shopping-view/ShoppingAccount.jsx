@@ -112,7 +112,7 @@ const ShoppingAccount = () => {
   }
 
   return (
-    <div className='container mx-auto'>
+    <div className='container mx-auto mb-40'>
       <div className=" rounded-xl  flex flex-col lg:flex-row w-full ">
         {/* Sidebar Navigation */}
 
