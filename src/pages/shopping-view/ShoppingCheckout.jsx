@@ -40,8 +40,10 @@ function ShoppingCheckout() {
     "totalAmount": totalAmount,
     "orderDate": new Date().toISOString(),
     "orderUpdateDate": new Date().toISOString(),
-    "successUrl": "http://localhost:5173/success",
-    "failureUrl": "http://localhost:5173/cancel"
+    "successUrl": "https://ecommerce-app-lilac-three.vercel.app/success",
+    "failureUrl": "https://ecommerce-app-lilac-three.vercel.app/cancel",
+    // "successUrl": "http://localhost:5173/success",
+    // "failureUrl": "http://localhost:5173/cancel",
   };
 
   const handleCheckout = async () => {

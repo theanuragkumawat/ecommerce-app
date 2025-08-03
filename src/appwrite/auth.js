@@ -58,7 +58,8 @@ class AuthService {
     // _____________VERIFY____________
     async getVerification() {
         try {
-            return await this.account.createVerification('http://localhost:5173/verify')
+            // return await this.account.createVerification('http://localhost:5173/verify')
+            return await this.account.createVerification('https://ecommerce-app-lilac-three.vercel.app/verify')
         } catch (error) {
             console.log("Verify error" + error);
         }
@@ -94,7 +95,8 @@ class AuthService {
             
             return await this.account.createRecovery(
                 email,
-                'http://localhost:5173/recover'
+                'https://ecommerce-app-lilac-three.vercel.app/recover'
+                // 'http://localhost:5173/recover'
             );
         } catch (error) {
             console.log("createPasswordRecover: " + error);
