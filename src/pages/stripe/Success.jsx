@@ -12,6 +12,7 @@ import { Link } from 'react-router'
 
 function Success() {
   const dispatch = useDispatch()
+  const {currency} = useSelector(state => state.shopProducts)
   const [isLoading, setIsLoading] = useState(true)
   const [displayData, setDisplayData] = useState({
   })
@@ -78,7 +79,7 @@ function Success() {
                   0
                 )
                 : 0;
-            setOrderData((prev) => ({ ...prev, orderDate: new Date().toLocaleDateString(), orderUpdateDate: new Date().toLocaleDateString(), userId: data1.$id, cartItems: data2.products, addressInfo: JSON.stringify(data3.documents.find(item => item.isDefault)), totalAmount: JSON.stringify(totalCartAmount) }))
+            setOrderData((prev) => ({ ...prev, orderDate: new Date().toLocaleDateString('en-in', { year: 'numeric', month: 'long', day: 'numeric' }), orderUpdateDate: new Date().toLocaleDateString('en-in', { year: 'numeric', month: 'long', day: 'numeric' }), userId: data1.$id, cartItems: data2.products, addressInfo: JSON.stringify(data3.documents.find(item => item.isDefault)), totalAmount: JSON.stringify(totalCartAmount) }))
           }
         }
       }
@@ -120,7 +121,7 @@ function Success() {
             </dl>
             <dl className="sm:flex items-center justify-between gap-4">
               <dt className="font-normal mb-1 sm:mb-0 text-gray-500 dark:text-gray-400">Toatl Amount</dt>
-              <dd className="font-medium text-gray-900 dark:text-white sm:text-end">{displayData?.totalAmount}</dd>
+              <dd className="font-medium text-gray-900 dark:text-white sm:text-end">{currency}{displayData?.totalAmount}</dd>
             </dl>
             <dl className="sm:flex items-center justify-between gap-4">
               <dt className="font-normal mb-1 sm:mb-0 text-gray-500 dark:text-gray-400">Payment Status</dt>
@@ -130,10 +131,10 @@ function Success() {
               <dt className="font-normal mb-1 sm:mb-0 text-gray-500 dark:text-gray-400">Address</dt>
               <dd className="font-medium text-gray-900 dark:text-white sm:text-end">{displayData && displayData.addressInfo ? JSON.parse(displayData.addressInfo).address : "No"}</dd>
             </dl>
-            <dl className="sm:flex items-center justify-between gap-4">
+            {/* <dl className="sm:flex items-center justify-between gap-4">
               <dt className="font-normal mb-1 sm:mb-0 text-gray-500 dark:text-gray-400">Phone</dt>
               <dd className="font-medium text-gray-900 dark:text-white sm:text-end">+(123) 456 7890</dd>
-            </dl>
+            </dl> */}
           </Card>
           <div className="flex items-center space-x-4">
             <Button>

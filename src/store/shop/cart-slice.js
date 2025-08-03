@@ -5,7 +5,7 @@ const initialState = {
     cartCount: 0,
     isLoading: true,
     totalAmount: 0,
-    discountAmount:0
+    discountAmount: 0
 }
 
 const cartSlice = createSlice({
@@ -35,11 +35,12 @@ const cartSlice = createSlice({
                     ? state.cartItems.reduce(
                         (sum, currentItem) =>
                             sum +
-                            (currentItem?.price) *
+                            (currentItem?.salePrice > 0 ? currentItem?.salePrice : currentItem?.price) *
                             currentItem?.quantity,
                         0
                     )
                     : 0;
+         
 
             if (action.payload) {
                 if (coupon.discountType === "percent") {
@@ -52,13 +53,13 @@ const cartSlice = createSlice({
                     state.totalAmount = totalCartAmount
 
                     state.discountAmount = coupon.value
-                } 
-            } else{
+                }
+            } else {
                 state.totalAmount = totalCartAmount
             }
         }
     }
 })
 
-export const { addProductsToCart, getCartCount,getTotalAmount } = cartSlice.actions;
+export const { addProductsToCart, getCartCount, getTotalAmount } = cartSlice.actions;
 export default cartSlice.reducer;

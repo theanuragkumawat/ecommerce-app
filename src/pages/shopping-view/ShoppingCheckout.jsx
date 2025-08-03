@@ -13,21 +13,22 @@ import { LoaderCircle } from 'lucide-react'
 function ShoppingCheckout() {
   const navigate = useNavigate()
 
-  const { cartItems } = useSelector(state => state.cart)
+  const { cartItems,totalAmount } = useSelector(state => state.cart)
   const { userData } = useSelector(state => state.auth)
   const { addressList } = useSelector(state => state.address)
+  const { currency } = useSelector(state => state.shopProducts)
   const [isDisabled, setIsDisabled] = useState(false)
 
-  const totalCartAmount =
-    cartItems && cartItems.length > 0
-      ? cartItems.reduce(
-        (sum, currentItem) =>
-          sum +
-          (currentItem?.price) *
-          currentItem?.quantity,
-        0
-      )
-      : 0;
+  // const totalCartAmount =
+  //   cartItems && cartItems.length > 0
+  //     ? cartItems.reduce(
+  //       (sum, currentItem) =>
+  //         sum +
+  //         (currentItem?.price) *
+  //         currentItem?.quantity,
+  //       0
+  //     )
+  //     : 0;
 
   const order = {
     "userId": userData.$id,
@@ -36,7 +37,7 @@ function ShoppingCheckout() {
     "orderStatus": "pending",
     "paymentMethod": "stripe",
     "paymentStatus": "pending",
-    "totalAmount": totalCartAmount,
+    "totalAmount": totalAmount,
     "orderDate": new Date().toISOString(),
     "orderUpdateDate": new Date().toISOString(),
     "successUrl": "http://localhost:5173/success",
@@ -106,7 +107,7 @@ function ShoppingCheckout() {
               Total
             </dt>
             <dd className="text-base font-bold text-gray-900 dark:text-white">
-              ${totalCartAmount}
+              {currency}{totalAmount}
             </dd>
           </dl>
           <div className='w-full px-4'>

@@ -2,7 +2,7 @@ import databaseService from '@/appwrite/config';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { data, Link } from 'react-router'
-import { addProductsToCart } from '@/store/shop/cart-slice';
+import { addProductsToCart, getTotalAmount } from '@/store/shop/cart-slice';
 import { addProductsToWishlist } from '@/store/shop/wishlist-slice';
 import { toast } from 'sonner';
 
@@ -92,6 +92,7 @@ function CartProductCard({ productId, quantity, className = "" }) {
           const data = await databaseService.deleteCart(userData.$id);
           toast('deleted')
           dispatch(addProductsToCart([]));
+          dispatch(getTotalAmount())
         } else {
 
           const data = await databaseService.updateCart(userData.$id, temp);

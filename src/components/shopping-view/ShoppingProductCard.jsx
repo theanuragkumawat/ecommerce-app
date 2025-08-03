@@ -12,9 +12,9 @@ function ShoppingProductCard({ product }) {
     const navigate = useNavigate()
     const { userData, isAuthenticated } = useSelector(state => state.auth)
     const cartItems = useSelector(state => state.cart.cartItems)
-    const {wishlistItems} = useSelector(state => state.wishlist)
-    const {currency} = useSelector(state => state.shopProducts)
-    const [isWishlisted,setIsWishlisted] = useState(false)
+    const { wishlistItems } = useSelector(state => state.wishlist)
+    const { currency } = useSelector(state => state.shopProducts)
+    const [isWishlisted, setIsWishlisted] = useState(false)
 
     const [imageURL, setImageURL] = useState("i")
     async function getImage() {
@@ -47,7 +47,7 @@ function ShoppingProductCard({ product }) {
                             dispatch(addProductsToCart(JSON.parse(data.products)))
                         }
                     } else {
-                        temp.push({ productId: product.$id, quantity: 1, price: product.price,title:product.title });
+                        temp.push({ productId: product.$id, quantity: 1, price: product.price, salePrice: product.salePrice, title: product.title });
                         const data = await databaseService.updateCart(userData.$id, temp);
                         if (data) {
                             dispatch(addProductsToCart(JSON.parse(data.products)))
@@ -56,7 +56,7 @@ function ShoppingProductCard({ product }) {
                     }
                 } else {
                     let productArr = [
-                        { productId: product.$id, quantity: 1, price: product.price,title:product.title }
+                        { productId: product.$id, quantity: 1, price: product.price, salePrice: product.salePrice, title: product.title }
                     ]
                     const response = await databaseService.createCart(userData.$id, productArr);
                     if (response) {
@@ -78,7 +78,7 @@ function ShoppingProductCard({ product }) {
                         localStorage.setItem("cart", JSON.stringify(temp))
                         dispatch(addProductsToCart(temp))
                     } else {
-                        temp.push({ productId: product.$id, quantity: 1, price: product.price,title:product.title });
+                        temp.push({ productId: product.$id, quantity: 1, price: product.price, salePrice: product.salePrice, title: product.title });
                         localStorage.setItem("cart", JSON.stringify(temp))
                         dispatch(addProductsToCart(temp))
                     }
@@ -86,7 +86,7 @@ function ShoppingProductCard({ product }) {
 
                 } else {
                     let productArr = [
-                        { productId: product.$id, quantity: 1, price: product.price }
+                        { productId: product.$id, quantity: 1, price: product.price, salePrice: product.salePrice, title: product.title }
                     ]
                     localStorage.setItem("cart", JSON.stringify(productArr))
                     dispatch(addProductsToCart(productArr))
@@ -147,8 +147,8 @@ function ShoppingProductCard({ product }) {
     }
 
     useEffect(() => {
-         setIsWishlisted(wishlistItems?.some(item => item == product.$id))
-    },[wishlistItems])
+        setIsWishlisted(wishlistItems?.some(item => item == product.$id))
+    }, [wishlistItems])
 
     return (
         <>

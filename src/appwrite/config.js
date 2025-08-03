@@ -442,6 +442,34 @@ export class DatabaseService {
       console.log("Apwrite service :: getAllOrders :: error", error);
     }
   }
+   async getAllAdminOrders() {
+    try {
+      const data = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteOrderCollectionId
+      );
+
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: getAllAdminOrders :: error", error);
+    }
+  }
+   async updateOrder(status,id) {
+    try {
+      const data = await this.databases.updateDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteOrderCollectionId,
+        id,
+        {
+          orderStatus:status
+        }
+      );
+
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: getAllAdminOrders :: error", error);
+    }
+  }
 
   // -----------------product Search Service-----------------
 
@@ -571,6 +599,19 @@ export class DatabaseService {
       return data;
     } catch (error) {
       console.log("Apwrite service :: getAllCoupons :: error", error);
+    }
+  }
+
+  async getCoupon(code) {
+    try {
+      const data = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCouponCollectionId,
+        [Query.equal("code", code)]
+      );
+      return data;
+    } catch (error) {
+      console.log("Apwrite service :: getCoupon :: error", error);
     }
   }
 
