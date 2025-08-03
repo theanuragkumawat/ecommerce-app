@@ -47,13 +47,13 @@ function ShoppingCheckout() {
   };
 
   const handleCheckout = async () => {
-    setIsDisabled(true)
     if (cartItems.length != 0) {
-
+      
       if (addressList && addressList.length >= 1) {
         if (addressList.find(item => item.isDefault)) {
-
+          
           try {
+            setIsDisabled(true)
             const data = await databaseService.createStripeOrder(order);
             if (data) {
               console.log(data);
