@@ -2,6 +2,7 @@ import databaseService from '@/appwrite/config'
 import { CartProductCard } from '@/components'
 import { Button } from '@/components/ui/button'
 import { getTotalAmount } from '@/store/shop/cart-slice'
+import { MoveRight } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router'
@@ -122,7 +123,7 @@ function ShoppingCart() {
               </div>
               <Button
                 onClick={proceedToCheckout}
-                className="flex w-full items-center justify-center rounded-lg bg-gray-900 border border-gray-900 transition duration-150 px-5 py-2.5 text-sm font-medium text-white  hover:text-gray-900 hover:bg-white focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                className="flex w-full items-center justify-center rounded-lg bg-gray-900 border border-gray-900 transition duration-150 px-5 py-2.5 text-sm font-medium text-white  hover:text-gray-900 hover:bg-white focus:outline-none focus:ring-4 focus:ring-primary-300 "
               >
                 Proceed to Checkout
               </Button>
@@ -136,21 +137,7 @@ function ShoppingCart() {
                   className="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500"
                 >
                   Continue Shopping
-                  <svg
-                    className="h-5 w-5"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 12H5m14 0-4 4m4-4-4-4"
-                    />
-                  </svg>
+                  <MoveRight/>
                 </Link>
               </div>
             </div>
@@ -171,15 +158,15 @@ function ShoppingCart() {
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                   />
                 </div>
-                <button
+                <Button
 
                   onClick={handleDiscount}
 
                   type="submit"
-                  className="flex w-full items-center justify-center rounded-lg bg-gray-900 border border-gray-900 transition duration-150 px-5 py-2.5 text-sm font-medium text-white  hover:text-gray-900 hover:bg-white focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                  className="flex w-full items-center justify-center rounded-lg bg-gray-900 border border-gray-900 transition duration-150 px-5 py-2.5 text-sm font-medium text-white  hover:text-gray-900 hover:bg-white focus:outline-none focus:ring-4 focus:ring-primary-300"
                 >
                   Apply Code
-                </button>
+                </Button>
               </form>
             </div>
           </div>

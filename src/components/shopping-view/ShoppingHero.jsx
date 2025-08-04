@@ -4,8 +4,18 @@ import { Link } from 'react-router'
 import bannerOne from "../../assets/banner-1.webp"
 import bannerTwo from "../../assets/banner-2.webp"
 import bannerThree from "../../assets/banner-3.webp"
+import bg1 from "../../assets/bg01.jpg"
+import bg2 from "../../assets/bg02.jpg"
+import bg3 from "../../assets/bg03.jpg"
 
 import { Card, CardContent } from "@/components/ui/card"
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel"
 import { Button } from '../ui/button'
 import databaseService from '@/appwrite/config'
 import { ShoppingProductCard } from '..'
@@ -13,14 +23,15 @@ import { ShoppingProductCard } from '..'
 
 function ShoppingHero() {
     const slides = [bannerOne, bannerTwo, bannerThree];
-    const [currentSlide,setCurrentSlide] = useState(0);
+    const minSlides = [bg1, bg3, bg2];
+    const [currentSlide, setCurrentSlide] = useState(0);
 
     useEffect(() => {
         const slideTimer = setInterval(() => {
-            setCurrentSlide(prev => (prev +1) % slides.length)
-        },4000)
+            setCurrentSlide(prev => (prev + 1) % slides.length)
+        }, 4000)
         return () => clearInterval(slideTimer)
-    },[])
+    }, [])
 
     const categoriesWithIcon = [
         { id: "men", label: "Men", icon: ShirtIcon },
@@ -43,10 +54,10 @@ function ShoppingHero() {
     const getFeatureProducts = async () => {
         try {
             let limit = 8
-            const data = await databaseService.getFilterProducts({limit})
-            if(data){
+            const data = await databaseService.getFilterProducts({ limit })
+            if (data) {
                 setFeatureProducts(data.documents)
-                
+
             }
         } catch (error) {
             console.log(error);
@@ -55,7 +66,7 @@ function ShoppingHero() {
 
     useEffect(() => {
         getFeatureProducts()
-    },[])
+    }, [])
     return (
         <section>
             <div className="flex flex-col min-h-screen">
@@ -71,22 +82,43 @@ function ShoppingHero() {
                         ))
                     }
                     <Button
-                        onClick={() => setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length )}
-                        className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80"
+                        onClick={() => setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length)}
+                        className="absolute hidden md:flex top-1/2 left-4 transform -translate-y-1/2 bg-white/80"
                         variant="outline"
                         size="icon"
                     >
                         <ChevronLeft />
                     </Button>
                     <Button
-                     onClick={() => setCurrentSlide(prev => (prev + 1) % slides.length )}
-                        className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80"
+                        onClick={() => setCurrentSlide(prev => (prev + 1) % slides.length)}
+                        className="absolute hidden md:flex top-1/2 right-4 transform -translate-y-1/2 bg-white/80"
                         variant="outline"
                         size="icon"
                     >
                         <ChevronRight />
                     </Button>
                 </div>
+
+                {/* carousel */}
+                <Carousel className="md:hidden w-full max-w-sm mx-auto">
+                    <CarouselContent>
+                        {minSlides.map((img, index) => (
+                            <CarouselItem key={index}>
+                                <div className="p-1">
+                                    <Card className={"p-0"}>
+                                        <CardContent className="flex aspect-square items-center justify-center p-0">
+                                            {/* <span className="text-4xl font-semibold">{index + 1}</span> */}
+                                            <img src={img} className='rounded-xl'/>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                </Carousel>
+
                 <section className="py-12 bg-gray-50">
                     <div className="container mx-auto px-4">
                         <h2 className="text-3xl font-bold text-center mb-8">
@@ -96,12 +128,12 @@ function ShoppingHero() {
                             {
                                 categoriesWithIcon.map((item) => (
                                     <Link to={`/listing?category=${item.id}`} key={item.label} >
-                                    <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-                                        <CardContent className="flex flex-col items-center justify-center p-6">
-                                            <item.icon className="w-12 h-12 mb-4 text-primary"/>
-                                             <span className="font-bold">{item.label}</span>
-                                        </CardContent>
-                                    </Card>
+                                        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                                            <CardContent className="flex flex-col items-center justify-center p-6">
+                                                <item.icon className="w-12 h-12 mb-4 text-primary" />
+                                                <span className="font-bold">{item.label}</span>
+                                            </CardContent>
+                                        </Card>
                                     </Link>
                                 ))
                             }
@@ -112,13 +144,13 @@ function ShoppingHero() {
                         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
                             {
                                 brandsWithIcon.map((item) => (
-                                    <Link to={`/listing?brand=${item.id}`}  key={item.label}>
-                                    <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-                                        <CardContent className="flex flex-col items-center justify-center p-6">
-                                            <item.icon className="w-12 h-12 mb-4 text-primary"/>
-                                             <span className="font-bold">{item.label}</span>
-                                        </CardContent>
-                                    </Card>
+                                    <Link to={`/listing?brand=${item.id}`} key={item.label}>
+                                        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                                            <CardContent className="flex flex-col items-center justify-center p-6">
+                                                <item.icon className="w-12 h-12 mb-4 text-primary" />
+                                                <span className="font-bold">{item.label}</span>
+                                            </CardContent>
+                                        </Card>
                                     </Link>
                                 ))
                             }
@@ -129,9 +161,9 @@ function ShoppingHero() {
                         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
                             {
                                 featureProducts?.map(item => (
-                                    <ShoppingProductCard 
-                                    key={item.$id}
-                                    product={item}
+                                    <ShoppingProductCard
+                                        key={item.$id}
+                                        product={item}
                                     />
                                 ))
                             }
