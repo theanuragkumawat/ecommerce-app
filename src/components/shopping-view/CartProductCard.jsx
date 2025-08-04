@@ -5,6 +5,7 @@ import { data, Link } from 'react-router'
 import { addProductsToCart, getTotalAmount } from '@/store/shop/cart-slice';
 import { addProductsToWishlist } from '@/store/shop/wishlist-slice';
 import { toast } from 'sonner';
+import { Heart, Minus, Plus, Trash } from 'lucide-react';
 
 function CartProductCard({ productId, quantity, className = "" }) {
   const [image, setImage] = useState('i')
@@ -181,124 +182,79 @@ function CartProductCard({ productId, quantity, className = "" }) {
   }, [])
 
   return (
-    <div className={`${className} rounded-lg border border-gray-200 bg-white sm:p-1 md:py-0.5 shadow-sm dark:border-gray-700 dark:bg-gray-800 `}>
-      <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
-        <Link className="shrink-0 md:order-1">
+    <div className={`${className} rounded-lg border border-gray-200 bg-white p-1.5 sm:p-1 md:p-4 relative shadow-s`}>
+      <div className="flex justify-between sm:justify-start items-center gap-7 sm:gap-4 ">
+        <Link className="shrink-0">
           <img
-            className="h-36 dark:hidden rounded-md"
+            className="sm:h-28 h-20 dark:hidden rounded-md"
             src={image}
           />
 
         </Link>
-        <label htmlFor="counter-input" className="sr-only">
-          Choose quantity:
-        </label>
-        <div className="flex items-center justify-between md:order-3 md:justify-end">
-          <div className="flex items-center">
-            <button
-              onClick={decrementHandler}
-              type="button"
-              id="decrement-button"
-              data-input-counter-decrement="counter-input"
-              className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
-            > {
-                quantity == 1 ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>
-                  </svg>
-                ) : (
-                  <svg
-                    className="h-2.5 w-2.5 text-gray-900 dark:text-white"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 18 2"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M1 1h16"
-                    />
-                  </svg>
-                )
-              }
-            </button>
-            <p className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white">
-              {quantity}
-            </p>
-            <button
-              onClick={incrementHandler}
-              type="button"
-              id="increment-button"
-              data-input-counter-increment="counter-input"
-              className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
+        <div className='sm:w-full pr-5  mr-auto'>
+          <div className="flex sm:flex-row justify-between flex-col ">
+            <Link
+              to={`/product/${productId}`}
+              className="text-base sm:text-lg mb-2 sm:mb-0 font-medium text-gray-900 hover:underline dark:text-white"
             >
-              <svg
-                className="h-2.5 w-2.5 text-gray-900 dark:text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 18 18"
+              {productDetails.title}
+            </Link>
+            <div className='sm:absolute sm:bottom-1/2 sm:translate-y-1/2 sm:right-0  flex gap-3 sm:gap-5 md:gap-7 lg:gap-9'>
+              <div className='flex flex-row mb-1'>
+                <button
+                  onClick={decrementHandler}
+                  type="button"
+                  id="decrement-button"
+                  data-input-counter-decrement="counter-input"
+                  className="inline-flex h-4 w-4 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100"
+                > {
+                    quantity == 1 ? (
+                      <Trash />
+                    ) : (
+                      <Minus className='w-3 h-3' />
+                    )
+                  }
+                </button>
+                <p className="w-5 leading-4 sm:leading-5 sm:w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white">
+                  {quantity}
+                </p>
+                <button
+                  onClick={incrementHandler}
+                  type="button"
+                  id="increment-button"
+                  data-input-counter-increment="counter-input"
+                  className="inline-flex  h-4 w-4 sm:h-5 sm:w-5  shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100"
+                >
+                  <Plus className='w-3 h-3' />
+                </button>
+              </div>
+              <p className="pr-4 sm:w-16 leading-4 sm:leading-5 text-md font-bold text-gray-900 dark:text-white">
+                {currency}{productDetails.salePrice > 0 ? productDetails.salePrice : productDetails.price}
+              </p>
+            </div>
+          </div>
+          <div className="">
+
+            <div className="flex items-center gap-2 sm:gap-4 mt-1.5">
+              <button
+                onClick={moveToWishlist}
+                type="button"
+                className="cursor-pointer inline-flex items-center text-xs sm:text-sm font-medium text-gray-500 hover:text-gray-900 hover:underline dark:text-gray-400 dark:hover:text-white"
               >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 1v16M1 9h16"
-                />
-              </svg>
-            </button>
-          </div>
-          <div className="text-end md:order-4 md:w-32">
-            <p className="pr-4 text-base font-bold text-gray-900 dark:text-white">
-              {currency}{productDetails.salePrice > 0 ? productDetails.salePrice : productDetails.price}
-            </p>
-          </div>
-        </div>
-        <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
-          <Link
-            to={`/product/${productId}`}
-            className="text-base font-medium text-gray-900 hover:underline dark:text-white"
-          >
-            {productDetails.title}
-          </Link>
-          <div className="flex items-center gap-4 mt-1.5">
-            <button
-              onClick={moveToWishlist}
-              type="button"
-              className=" cursor-pointer inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 hover:underline dark:text-gray-400 dark:hover:text-white"
-            >
-              <svg
-                className="me-1.5 h-5 w-5"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width={24}
-                height={24}
-                fill="none"
-                viewBox="0 0 24 24"
+                <Heart className='w-4 h-4 md:mr-1' />
+                Move to Favorites
+              </button>
+              <button
+                onClick={deleteHandler}
+                type="button"
+                className="cursor-pointer inline-flex items-center text-xs sm:text-sm font-medium text-red-600 hover:text-red-700 hover:underline dark:text-red-500"
               >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
-                />
-              </svg>
-              Move to Favorites
-            </button>
-            <button
-              onClick={deleteHandler}
-              type="button"
-              className="cursor-pointer inline-flex items-center text-sm font-medium text-red-600 hover:text-red-700 hover:underline dark:text-red-500"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="me-1.5 h-5 w-5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>
-              </svg>
-              Remove
-            </button>
+                <Trash className='w-4 h-4 md:mr-1' />
+                Remove
+              </button>
+            </div>
           </div>
+
         </div>
       </div>
     </div>

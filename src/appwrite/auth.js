@@ -41,7 +41,7 @@ class AuthService {
         try {
             return await this.account.get()
         } catch (error) {
-            console.log("get account error" + error);
+            // console.log("get account error" + error);
             return false
         }
     }

@@ -3,26 +3,16 @@ import { CartProductCard } from '@/components'
 import { getTotalAmount } from '@/store/shop/cart-slice'
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
 
 function ShoppingCart() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { currency } = useSelector(state => state.shopProducts)
+  const { isAuthenticated } = useSelector(state => state.auth)
   const { cartItems, totalAmount, discountAmount } = useSelector(state => state.cart);
   const [discountInput, setDiscountInput] = useState('')
-  // console.log(typeof discountInput);
-
-  // const totalCartAmount =
-  //   cartItems && cartItems.length > 0
-  //     ? cartItems.reduce(
-  //       (sum, currentItem) =>
-  //         sum +
-  //         (currentItem?.price) *
-  //         currentItem?.quantity,
-  //       0
-  //     )
-  //     : 0;
 
   async function handleDiscount(e) {
     e.preventDefault()
@@ -50,8 +40,16 @@ function ShoppingCart() {
     }
   }, [cartItems])
 
+  function proceedToCheckout(){
+    if(isAuthenticated){
+      navigate("/checkout")
+    } else{
+      toast.error('Please login to proceed')
+    }
+  }
+
   return (
-    <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+    <section className={`${cartItems?.length > 0 ? "mb-20" : "md:mb-96"} bg-white py-8 antialiased dark:bg-gray-900 md:py-16`}>
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
           Shopping Cart
@@ -59,7 +57,7 @@ function ShoppingCart() {
         <div className="mt-6 sm:mt-0 md:gap-6 lg:flex lg:items-start xl:gap-8">
           <div className=" w-full flex-none lg:max-w-2xl xl:max-w-4xl">
             <div className="space-y-6">
-              {/* MAP */}
+              {/* map */}
               {
                 cartItems.length > 0 ? (
                   <div className='sm:mt-6'>
@@ -121,15 +119,14 @@ function ShoppingCart() {
                 </dl>
               </div>
               <Link
-                to="/checkout"
+                onClick={proceedToCheckout}
                 className="flex w-full items-center justify-center rounded-lg bg-gray-900 border border-gray-900 transition duration-150 px-5 py-2.5 text-sm font-medium text-white  hover:text-gray-900 hover:bg-white focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
                 Proceed to Checkout
               </Link>
               <div className="flex items-center justify-center gap-2">
                 <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                  {" "}
-                  or{" "}
+                  or
                 </span>
                 <Link
                   to="/listing"
@@ -162,8 +159,7 @@ function ShoppingCart() {
                     htmlFor="voucher"
                     className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    {" "}
-                    Do you have a voucher or gift card?{" "}
+                    Do you have a voucher or gift card?
                   </label>
                   <input
                     onChange={(e) => setDiscountInput(e.target.value)}

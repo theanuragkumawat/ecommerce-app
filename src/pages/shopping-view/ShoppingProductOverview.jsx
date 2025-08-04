@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addProductsToCart } from '@/store/shop/cart-slice';
 import { addProductsToWishlist } from '@/store/shop/wishlist-slice';
 import { toast } from 'sonner';
-import { Heart, Star } from 'lucide-react';
+import { CarTaxiFront, Heart, ShoppingCart, Star } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import RatingInput from '@/components/shopping-view/RatingInput';
@@ -283,11 +283,10 @@ function ShoppingProductOverview() {
                             <Link
                                 onClick={addToWishlistHandler}
                                 title=""
-                                className={` transition  duration-150 flex items-center justify-center py-2.5 px-5 text-sm font-medium focus:outline-none bg-white rounded-lg border border-gray-700 hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100`}
+                                className={`mb-2 sm:mb-0 transition  duration-150 flex items-center justify-center py-2.5 px-5 text-sm font-medium focus:outline-none bg-white rounded-lg border border-gray-700 hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100`}
                                 role="button"
                             >
                                 <Heart fill={`${isWishlisted ? "#f02730" : "white"}`} className={`${isWishlisted ? "text-red-500" : ""} w-5 h-5 -ms-2 me-2`} />
-                                {/* <Heart fill={`${isWishlisted ? "red" : ""} `} color={`${isWishlisted ? "red" : ""} `}  className={` w-5 h-5 -ms-2 me-2`}/> */}
                                 Add to favorites
                             </Link>
                             <Link
@@ -297,24 +296,7 @@ function ShoppingProductOverview() {
                                 className="transition duration-150 flex items-center justify-center py-2.5 px-5 text-sm font-medium bg-gray-900 text-white hover:bg-primary-800 focus:outline-none rounded-lg border border-gray-700 hover:bg-white hover:text-gray-900 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                                 role="button"
                             >
-                                <svg
-
-                                    className="w-5 h-5 -ms-2 me-2"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width={24}
-                                    height={24}
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6"
-                                    />
-                                </svg>
+                                <ShoppingCart className='w-5 h-5 sm:w-5 sm:h-5 mr-2'/>
                                 Add to cart
                             </Link>
                         </div>
@@ -361,7 +343,7 @@ function ShoppingProductOverview() {
                                     <div className="flex justify-center">
                                         <Button
                                             onClick={() => setReviewsToShow(allProductsReview?.length)}
-                                            className="-mt-2 px-2"
+                                            className="-mt-2 px-2 text-xs sm:text-sm sm:px-4 rounded-3xl"
                                         >
                                             Show more reviews
                                         </Button>

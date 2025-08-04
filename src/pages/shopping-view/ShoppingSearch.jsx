@@ -35,7 +35,7 @@ function ShoppingSearch() {
 
 
     return (
-        <div className='container w-5/6 md:w-9/10 lg: xl:w-3/4 2xl:w-2/3 mx-auto justify-center items-center mt-2'>
+        <div className={`${searchResults.length > 0 ? "mb-20" : "mb-96"} container w-5/6 md:w-9/10 lg: xl:w-3/4 2xl:w-2/3 mx-auto justify-center items-center mt-2`}>
             <div className="flex justify-center mb-8">
                 <div className="w-full flex items-center relative"> {/* Added 'relative' for potential absolute positioning of icons */}
                     <label htmlFor="productSearch" className="sr-only">Search Products</label> {/* Added a visually hidden label for accessibility */}
@@ -74,7 +74,7 @@ function ShoppingSearch() {
                     }
                 </div>
             ) : (
-                <h1 className='text-4xl font-bold'>No products found...</h1>
+                <h1 className='text-2xl font-semibold md:text-4xl md:font-bold'>No products found...</h1>
             )}
         </div>
     )

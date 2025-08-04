@@ -59,14 +59,12 @@ function App() {
           if(location.pathname.includes('admin')){
             if(userData.email == "anurag.kmwt7851@gmail.com"){
               navigate("/admin/dashboard")
-
             } else{
               navigate("/admin/login")
             }
           } 
           setIsLoading(false)
           // console.log(userData);
-
         } else {
           dispatch(storeLogout())
           if(location.pathname.includes('admin')){
