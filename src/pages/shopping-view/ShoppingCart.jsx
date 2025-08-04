@@ -1,9 +1,11 @@
 import databaseService from '@/appwrite/config'
 import { CartProductCard } from '@/components'
+import { Button } from '@/components/ui/button'
 import { getTotalAmount } from '@/store/shop/cart-slice'
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
+import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 
 function ShoppingCart() {
@@ -22,7 +24,7 @@ function ShoppingCart() {
     try {
       const exist =  await databaseService.getCoupon(discountInput)
       if(exist && exist.documents.length > 0){
-        console.log(exist);
+        // console.log(exist);
         dispatch(getTotalAmount(exist.documents[0]))
         
       } else{
@@ -35,14 +37,14 @@ function ShoppingCart() {
 
   useEffect(() => {
     if (cartItems && cartItems.length > 0) {
-      console.log("this is the end", cartItems);
+      // console.log("this is the end", cartItems);
       dispatch(getTotalAmount())
     }
   }, [cartItems])
 
   function proceedToCheckout(){
     if(isAuthenticated){
-      navigate("/checkout")
+      navigate('/checkout')
     } else{
       toast.error('Please login to proceed')
     }
@@ -118,12 +120,12 @@ function ShoppingCart() {
                   </dd>
                 </dl>
               </div>
-              <Link
+              <Button
                 onClick={proceedToCheckout}
                 className="flex w-full items-center justify-center rounded-lg bg-gray-900 border border-gray-900 transition duration-150 px-5 py-2.5 text-sm font-medium text-white  hover:text-gray-900 hover:bg-white focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
                 Proceed to Checkout
-              </Link>
+              </Button>
               <div className="flex items-center justify-center gap-2">
                 <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
                   or

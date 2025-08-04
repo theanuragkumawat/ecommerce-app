@@ -56,9 +56,9 @@ function ShoppingCheckout() {
             setIsDisabled(true)
             const data = await databaseService.createStripeOrder(order);
             if (data) {
-              console.log(data);
+              // console.log(data);
             }
-            console.log(order);
+            // console.log(order);
 
           } catch (error) {
             console.log(error);
@@ -90,7 +90,7 @@ function ShoppingCheckout() {
       <div className="relative h-[300px] w-full overflow-hidden">
         <img src={img} className="h-full w-full object-cover object-center" />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5 p-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5 p-5">
         <Address className={''} />
         <div className="flex flex-col gap-4">
           {

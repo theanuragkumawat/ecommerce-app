@@ -42,7 +42,7 @@ function Login({setOpenDialog}) {
 
                             const data = await databaseService.createCart(userData.$id, JSON.parse(tempCart))
                             if (data) {
-                                console.log(data);
+                                // console.log(data);
                                 dispatch(addProductsToCart(JSON.parse(data.products)))
                                 localStorage.removeItem('cart');
                             }

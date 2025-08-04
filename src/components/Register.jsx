@@ -52,7 +52,7 @@ function Register({ setEmail, setVerifying }) {
         }
     }
 
-    console.log(userDetails);
+    // console.log(userDetails);
 
 
     return (
